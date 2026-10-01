@@ -1,0 +1,30 @@
+{
+  "name": "personashift",
+  "version": "0.1.0",
+  "description": "PersonaShift — Milestone 1: Project Foundation + Problem Parser",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev:server": "node --watch server/server.js",
+    "client": "npm --prefix client run dev",
+    "client:build": "npm --prefix client run build",
+    "install:all": "npm install && npm --prefix client install",
+    "test:parser": "node scripts/test-parser.js"
+  },
+  "dependencies": {
+    "@google/genai": "^2.25.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "zod": "^3.24.2"
+  },
+  "keywords": [
+    "personashift",
+    "perspective-mapping",
+    "problem-parser",
+    "gemini"
+  ],
+  "author": "",
+  "license": "ISC"
+}
