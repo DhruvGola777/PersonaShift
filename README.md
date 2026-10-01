@@ -2,11 +2,14 @@
 
 > General-purpose perspective-mapping and decision-exploration tool.
 
-## Milestone 1: Project Foundation + Problem Parser
+## Milestone 2: Stakeholder Engine (Discovery + User Verification)
 
-PersonaShift helps people understand different perspectives around complex decisions. It informs user decisions rather than making decisions for them.
+PersonaShift maps perspectives around complex decisions. In Milestone 2, the system takes the structured `ProblemModel` produced in Milestone 1 and identifies 4–8 high-value stakeholders across three relevance tiers:
+- **Direct**: Experiences the effects directly.
+- **Indirect**: Experiences secondary or downstream consequences.
+- **System**: Operates, regulates, funds, maintains, or governs part of the system.
 
-This milestone establishes the foundational system architecture and implements the **Problem Parser** stage, which parses a raw user description of a complex problem into a structured `ProblemModel` using Google Gemini with strict schema enforcement and validation.
+The AI proposes initial stakeholders, but the **user has final authority**. Users can keep, edit, remove, or add custom stakeholders before confirming the final list that will feed into the Perspective Engine.
 
 ---
 
@@ -162,6 +165,43 @@ Content-Type: application/json
       "Campus IT infrastructure and technical support"
     ]
   }
+}
+```
+
+### Discover Stakeholders
+
+```http
+POST /api/stakeholders
+Content-Type: application/json
+```
+
+**Request Payload:**
+```json
+{
+  "problem": {
+    "summary": "...",
+    "decision": "...",
+    "domain": "...",
+    "facts": [],
+    "unknowns": [],
+    "assumptions": [],
+    "affectedAreas": []
+  }
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "stakeholders": [
+    {
+      "id": "students",
+      "name": "Students",
+      "reason": "Directly affected by mandatory attendance requirements affecting scheduling and academic grading.",
+      "relevance": "direct",
+      "source": "ai"
+    }
+  ]
 }
 ```
 

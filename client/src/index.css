@@ -17,7 +17,7 @@ body {
 }
 
 .container {
-  max-width: 800px;
+  max-width: 860px;
   margin: 0 auto;
 }
 
@@ -53,17 +53,20 @@ body {
   color: #1f2937;
 }
 
-textarea {
+textarea, input[type="text"], select {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 14px;
+}
+
+textarea {
   resize: vertical;
 }
 
-textarea:focus {
+textarea:focus, input[type="text"]:focus, select:focus {
   outline: none;
   border-color: #2563eb;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
@@ -79,9 +82,9 @@ button {
   background-color: #2563eb;
   color: #ffffff;
   border: none;
-  padding: 10px 20px;
+  padding: 9px 18px;
   border-radius: 6px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.15s ease;
@@ -96,6 +99,16 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.secondary-btn {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.secondary-btn:hover:not(:disabled) {
+  background-color: #e5e7eb;
+}
+
 .error-box {
   margin-top: 16px;
   padding: 12px 14px;
@@ -108,8 +121,9 @@ button:disabled {
 
 .loading-box {
   margin-top: 16px;
-  padding: 12px;
+  padding: 14px;
   background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
   border-radius: 6px;
   color: #1d4ed8;
   font-size: 14px;
@@ -119,7 +133,7 @@ button:disabled {
 .result-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .result-section h2 {
@@ -171,14 +185,47 @@ button:disabled {
 
 .badge {
   display: inline-block;
-  align-self: flex-start;
-  background-color: #e0f2fe;
-  color: #0369a1;
-  padding: 2px 10px;
+  padding: 2px 8px;
   border-radius: 9999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: capitalize;
+}
+
+.domain-badge {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  align-self: flex-start;
+}
+
+.badge-group {
+  display: flex;
+  gap: 6px;
+}
+
+.relevance-direct {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.relevance-indirect {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+}
+
+.relevance-system {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.source-ai {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.source-user {
+  background-color: #dcfce7;
+  color: #166534;
 }
 
 .lists-grid {
@@ -195,7 +242,7 @@ button:disabled {
 }
 
 .list-card h3 {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: #374151;
   margin-bottom: 10px;
@@ -219,4 +266,241 @@ button:disabled {
   font-size: 14px;
   font-style: italic;
   color: #9ca3af;
+}
+
+/* Stakeholder Engine Styles */
+.stakeholders-wrapper {
+  margin-top: 12px;
+  border-top: 2px solid #e5e7eb;
+  padding-top: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.review-intro {
+  font-size: 14px;
+  color: #4b5563;
+  margin-bottom: 16px;
+}
+
+.stakeholder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stakeholder-card {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.15s ease;
+}
+
+.card-kept {
+  border-left: 4px solid #2563eb;
+}
+
+.card-excluded {
+  opacity: 0.55;
+  border-left: 4px solid #9ca3af;
+  background: #fafafa;
+}
+
+.confirmed-card {
+  border-left: 4px solid #16a34a;
+}
+
+.stakeholder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.stakeholder-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.stakeholder-reason {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 5px;
+}
+
+.btn-keep {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-keep:hover {
+  background-color: #e5e7eb;
+}
+
+.btn-keep-active {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.btn-keep-active:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-edit {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-edit:hover {
+  background-color: #e5e7eb;
+}
+
+.btn-remove {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.btn-remove:hover {
+  background-color: #fecaca;
+}
+
+/* Edit Form */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.action-row {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.save-btn {
+  background-color: #16a34a;
+}
+
+.save-btn:hover:not(:disabled) {
+  background-color: #15803d;
+}
+
+.cancel-btn {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+/* Add Stakeholder Box */
+.add-stakeholder-box {
+  background: #f9fafb;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.add-stakeholder-box h3 {
+  font-size: 15px;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.add-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.add-error-text {
+  color: #b91c1c;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* Confirm Row */
+.confirm-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.confirm-btn {
+  background-color: #059669;
+  font-size: 16px;
+  padding: 12px 28px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background-color: #047857;
+}
+
+/* Confirmed View */
+.confirmed-section {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.confirmed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.confirmed-header h3 {
+  font-size: 18px;
+  color: #166534;
+}
+
+.confirmed-note {
+  margin-top: 14px;
+  font-size: 13px;
+  color: #15803d;
+  font-weight: 500;
+  text-align: center;
 }

@@ -10,7 +10,8 @@
     "client": "npm --prefix client run dev",
     "client:build": "npm --prefix client run build",
     "install:all": "npm install && npm --prefix client install",
-    "test:parser": "node scripts/test-parser.js"
+    "test:parser": "node scripts/test-parser.js",
+    "test:stakeholders": "node scripts/test-stakeholders.js"
   },
   "dependencies": {
     "@google/genai": "^2.25.0",

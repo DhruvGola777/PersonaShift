@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import analyzeRouter from "./routes/analyze.js";
+import stakeholdersRouter from "./routes/stakeholders.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -23,6 +24,7 @@ app.get("/api/health", (req, res) => {
 
 // API Routes
 app.use("/api", analyzeRouter);
+app.use("/api", stakeholdersRouter);
 
 // Global Error Handler (handles malformed JSON payloads and unexpected errors)
 app.use((err, req, res, next) => {
