@@ -13,6 +13,12 @@ export default function App() {
   const [stakeholderError, setStakeholderError] = useState(null);
   const [confirmedStakeholders, setConfirmedStakeholders] = useState(null);
 
+  // Perspective Engine state (Milestone 3)
+  const [perspectives, setPerspectives] = useState(null);
+  const [loadingPerspectives, setLoadingPerspectives] = useState(false);
+  const [perspectiveError, setPerspectiveError] = useState(null);
+  const [activeStakeholderId, setActiveStakeholderId] = useState(null);
+
   // Editing state for an individual stakeholder
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ name: "", reason: "", relevance: "direct" });
@@ -40,7 +46,10 @@ export default function App() {
     setProblemResult(null);
     setStakeholders([]);
     setConfirmedStakeholders(null);
+    setPerspectives(null);
+    setActiveStakeholderId(null);
     setStakeholderError(null);
+    setPerspectiveError(null);
 
     try {
       const response = await fetch("/api/analyze", {
@@ -184,21 +193,71 @@ export default function App() {
 
   // Confirm final stakeholder list
   const handleConfirm = () => {
-    // Retain stakeholders that are kept
     const finalized = stakeholders.filter((s) => s.kept);
     setConfirmedStakeholders(finalized);
+    // Reset any previously generated perspectives when confirming an updated list
+    setPerspectives(null);
+    setActiveStakeholderId(null);
+    setPerspectiveError(null);
   };
 
   // Allow re-editing after confirmation
   const handleReEdit = () => {
     setConfirmedStakeholders(null);
+    setPerspectives(null);
+    setActiveStakeholderId(null);
+    setPerspectiveError(null);
   };
+
+  // Generate perspectives for the confirmed stakeholder list (Milestone 3)
+  const handleGeneratePerspectives = async () => {
+    if (!problemResult || !confirmedStakeholders || confirmedStakeholders.length === 0) {
+      return;
+    }
+
+    setLoadingPerspectives(true);
+    setPerspectiveError(null);
+
+    try {
+      const response = await fetch("/api/perspectives", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          problem: problemResult,
+          stakeholders: confirmedStakeholders
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate perspectives.");
+      }
+
+      setPerspectives(data.perspectives);
+      if (confirmedStakeholders.length > 0) {
+        setActiveStakeholderId(confirmedStakeholders[0].id);
+      }
+    } catch (err) {
+      setPerspectiveError(err.message || "An error occurred while generating perspectives.");
+    } finally {
+      setLoadingPerspectives(false);
+    }
+  };
+
+  // Retrieve current active perspective
+  const currentStakeholder = confirmedStakeholders?.find(
+    (s) => s.id === activeStakeholderId
+  );
+  const currentPerspective = perspectives?.find(
+    (p) => p.stakeholderId === activeStakeholderId
+  );
 
   return (
     <div className="container">
       <header className="header">
         <h1>PersonaShift</h1>
-        <p className="subtitle">Milestone 2: Problem Parser + Stakeholder Engine</p>
+        <p className="subtitle">Milestone 3: Problem Parser + Stakeholder Engine + Perspective Engine</p>
       </header>
 
       <main>
@@ -378,9 +437,46 @@ export default function App() {
                       ))}
                     </div>
                   )}
-                  <p className="confirmed-note">
-                    Ready for Milestone 3 (Perspective Engine). User modifications are locked in.
-                  </p>
+
+                  {/* Step 4: Perspective Generation Trigger */}
+                  {!perspectives && (
+                    <div className="generate-perspectives-box">
+                      <p className="generate-text">
+                        Generate structured, uncertainty-aware perspectives for each of your confirmed stakeholders.
+                      </p>
+                      <button
+                        type="button"
+                        className="confirm-btn"
+                        onClick={handleGeneratePerspectives}
+                        disabled={loadingPerspectives || confirmedStakeholders.length === 0}
+                      >
+                        {loadingPerspectives
+                          ? "Generating Perspectives..."
+                          : `Generate Perspectives (${confirmedStakeholders.length})`}
+                      </button>
+                    </div>
+                  )}
+
+                  {loadingPerspectives && (
+                    <div className="loading-box">
+                      <p>Constructing neutral perspective models using Gemini...</p>
+                    </div>
+                  )}
+
+                  {perspectiveError && (
+                    <div className="error-box">
+                      <strong>Error: </strong> {perspectiveError}
+                      <div style={{ marginTop: "8px" }}>
+                        <button
+                          type="button"
+                          className="secondary-btn"
+                          onClick={handleGeneratePerspectives}
+                        >
+                          Retry Perspective Generation
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 /* Stakeholder Review & Edit Mode */
@@ -573,6 +669,170 @@ export default function App() {
                 )
               )}
             </div>
+
+            {/* Step 5: Perspective Engine & SHIFT View (Milestone 3) */}
+            {perspectives && confirmedStakeholders && (
+              <section className="perspectives-section">
+                <div className="perspectives-header">
+                  <h2>Perspectives</h2>
+                  <p className="perspectives-subtitle">
+                    Structured factor mapping for each confirmed stakeholder. Shifting between perspectives reveals different possible priorities and constraints.
+                  </p>
+                </div>
+
+                {/* SHIFT Selector Tabs */}
+                <div className="shift-container">
+                  <div className="shift-header">
+                    <span className="shift-tag">SHIFT</span>
+                    <span className="shift-label">Select Stakeholder Perspective:</span>
+                  </div>
+
+                  <div className="shift-tabs" role="tablist">
+                    {confirmedStakeholders.map((s) => {
+                      const isActive = s.id === activeStakeholderId;
+                      return (
+                        <button
+                          key={s.id}
+                          type="button"
+                          role="tab"
+                          aria-selected={isActive}
+                          className={`shift-tab-btn ${isActive ? "shift-tab-active" : ""}`}
+                          onClick={() => setActiveStakeholderId(s.id)}
+                        >
+                          {s.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Current Active Perspective Card */}
+                {currentStakeholder && currentPerspective && (
+                  <div className="perspective-card">
+                    <div className="perspective-card-header">
+                      <div>
+                        <span className="perspective-eyebrow">Current Perspective</span>
+                        <h3 className="perspective-title">{currentStakeholder.name}</h3>
+                      </div>
+                      <div className="badge-group">
+                        <span className={`badge relevance-${currentStakeholder.relevance}`}>
+                          {currentStakeholder.relevance}
+                        </span>
+                        <span className={`badge source-${currentStakeholder.source || "ai"}`}>
+                          {currentStakeholder.source === "user" ? "user-added" : "ai"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="perspective-stakeholder-reason">
+                      <strong>Context: </strong>{currentStakeholder.reason}
+                    </p>
+
+                    <div className="categories-grid">
+                      {/* 1. Goals */}
+                      <div className="category-card">
+                        <div className="category-header">
+                          <h4>Goals</h4>
+                          <span className="category-desc">Potential outcomes that may matter</span>
+                        </div>
+                        <ul className="items-list">
+                          {currentPerspective.goals.map((item, idx) => (
+                            <li key={idx} className="perspective-item">
+                              <span className="item-text">{item.text}</span>
+                              <span className={`basis-badge basis-${item.basis}`}>
+                                {item.basis}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* 2. Concerns */}
+                      <div className="category-card">
+                        <div className="category-header">
+                          <h4>Concerns</h4>
+                          <span className="category-desc">Potential risks, downsides, or negative outcomes</span>
+                        </div>
+                        <ul className="items-list">
+                          {currentPerspective.concerns.map((item, idx) => (
+                            <li key={idx} className="perspective-item">
+                              <span className="item-text">{item.text}</span>
+                              <span className={`basis-badge basis-${item.basis}`}>
+                                {item.basis}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* 3. Constraints */}
+                      <div className="category-card">
+                        <div className="category-header">
+                          <h4>Constraints</h4>
+                          <span className="category-desc">Limitations or conditions affecting action</span>
+                        </div>
+                        <ul className="items-list">
+                          {currentPerspective.constraints.map((item, idx) => (
+                            <li key={idx} className="perspective-item">
+                              <span className="item-text">{item.text}</span>
+                              <span className={`basis-badge basis-${item.basis}`}>
+                                {item.basis}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* 4. Incentives */}
+                      <div className="category-card">
+                        <div className="category-header">
+                          <h4>Incentives</h4>
+                          <span className="category-desc">Factors shaping behavior or positions</span>
+                        </div>
+                        <ul className="items-list">
+                          {currentPerspective.incentives.map((item, idx) => (
+                            <li key={idx} className="perspective-item">
+                              <span className="item-text">{item.text}</span>
+                              <span className={`basis-badge basis-${item.basis}`}>
+                                {item.basis}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* 5. Priorities */}
+                      <div className="category-card">
+                        <div className="category-header">
+                          <h4>Priorities</h4>
+                          <span className="category-desc">Factors prioritized when evaluating the decision</span>
+                        </div>
+                        <ul className="items-list">
+                          {currentPerspective.priorities.map((item, idx) => (
+                            <li key={idx} className="perspective-item">
+                              <span className="item-text">{item.text}</span>
+                              <span className={`basis-badge basis-${item.basis}`}>
+                                {item.basis}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="basis-legend">
+                      <span className="legend-title">Basis Indicators:</span>
+                      <span className="basis-badge basis-fact">Fact</span>
+                      <span className="legend-desc">Explicitly stated in problem data</span>
+                      <span className="basis-badge basis-inference">Inference</span>
+                      <span className="legend-desc">Reasonable contextual possibility</span>
+                      <span className="basis-badge basis-unknown">Unknown</span>
+                      <span className="legend-desc">Genuinely unknown or unconfirmed</span>
+                    </div>
+                  </div>
+                )}
+              </section>
+            )}
           </section>
         )}
       </main>

@@ -2,14 +2,23 @@
 
 > General-purpose perspective-mapping and decision-exploration tool.
 
-## Milestone 2: Stakeholder Engine (Discovery + User Verification)
+## Milestone 3: Perspective Engine (Structured Factor Mapping & SHIFT)
 
-PersonaShift maps perspectives around complex decisions. In Milestone 2, the system takes the structured `ProblemModel` produced in Milestone 1 and identifies 4–8 high-value stakeholders across three relevance tiers:
-- **Direct**: Experiences the effects directly.
-- **Indirect**: Experiences secondary or downstream consequences.
-- **System**: Operates, regulates, funds, maintains, or governs part of the system.
+PersonaShift maps perspectives around complex decisions without deciding for the user or claiming to know what real people actually believe.
 
-The AI proposes initial stakeholders, but the **user has final authority**. Users can keep, edit, remove, or add custom stakeholders before confirming the final list that will feed into the Perspective Engine.
+In Milestone 3, given a validated `ProblemModel` and the user's confirmed stakeholder list, the system generates structured, neutral, uncertainty-aware perspectives containing:
+- **Goals** (1–3 items): Potential outcomes that may matter.
+- **Concerns** (1–3 items): Potential risks, downsides, or negative outcomes.
+- **Constraints** (1–3 items): Limitations or conditions affecting action.
+- **Incentives** (1–3 items): Factors that could shape behavior or position.
+- **Priorities** (1–3 items): Factors prioritized during evaluation.
+
+Every perspective item is attributed with a rigorous basis:
+- `[Fact]`: Explicitly supported by problem facts or explicit user input.
+- `[Inference]`: Reasonable contextual possibilities phrased cautiously ("may", "could", "might").
+- `[Unknown]`: When information is genuinely unavailable.
+
+Perspectives can then be explored instantly via the **SHIFT** selector interface.
 
 ---
 
@@ -38,17 +47,25 @@ personashift/
 │   ├── ai/
 │   │   ├── gemini.js           # Dedicated Gemini client & structured output config
 │   │   ├── prompts/
-│   │   │   └── problemParser.js # Dedicated Problem Parser system prompt & rules
+│   │   │   ├── problemParser.js     # Problem Parser system prompt & rules
+│   │   │   ├── stakeholderEngine.js # Stakeholder Engine system prompt & rules
+│   │   │   └── perspectiveEngine.js # Perspective Engine system prompt & rules
 │   │   └── schemas/
-│   │       └── problem.js       # Zod ProblemSchema & Gemini JSON schema
+│   │       ├── problem.js           # Zod ProblemSchema & Gemini JSON schema
+│   │       ├── stakeholder.js       # Zod StakeholderSchema & Gemini JSON schema
+│   │       └── perspective.js       # Zod PerspectiveSchema & Gemini JSON schema
 │   │
 │   ├── services/
-│   │   └── problemParser.js    # Problem Parser service orchestration with retry logic
+│   │   ├── problemParser.js    # Problem Parser orchestration & retry
+│   │   ├── stakeholderEngine.js # Stakeholder Engine orchestration & retry
+│   │   └── perspectiveEngine.js # Perspective Engine invariant checks & retry
 │   │
 │   ├── routes/
-│   │   └── analyze.js          # POST /api/analyze endpoint with validation & error handling
+│   │   ├── analyze.js          # POST /api/analyze
+│   │   ├── stakeholders.js     # POST /api/stakeholders
+│   │   └── perspectives.js     # POST /api/perspectives
 │   │
-│   └── server.js               # Express application setup, CORS, and GET /api/health
+│   └── server.js               # Express application setup, CORS, and health check
 │
 ├── .env.example
 ├── .gitignore
@@ -200,6 +217,78 @@ Content-Type: application/json
       "reason": "Directly affected by mandatory attendance requirements affecting scheduling and academic grading.",
       "relevance": "direct",
       "source": "ai"
+    }
+  ]
+}
+```
+
+### Generate Perspectives
+
+```http
+POST /api/perspectives
+Content-Type: application/json
+```
+
+**Request Payload:**
+```json
+{
+  "problem": {
+    "summary": "Our college is considering making attendance mandatory for all students.",
+    "decision": "Whether to make attendance mandatory for all students.",
+    "domain": "Education",
+    "facts": ["The institution is a college considering mandatory attendance."],
+    "unknowns": ["The exact enforcement mechanisms."],
+    "assumptions": ["Attendance tracking may require administrative effort."],
+    "affectedAreas": ["Academic performance", "Student scheduling"]
+  },
+  "stakeholders": [
+    {
+      "id": "students",
+      "name": "Students",
+      "reason": "Directly affected by mandatory attendance and consequences for absences.",
+      "relevance": "direct",
+      "source": "ai"
+    }
+  ]
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "perspectives": [
+    {
+      "stakeholderId": "students",
+      "goals": [
+        {
+          "text": "May aim to maintain flexibility in their personal and academic schedules.",
+          "basis": "inference"
+        }
+      ],
+      "concerns": [
+        {
+          "text": "May be concerned about potential penalties for missing classes due to personal circumstances.",
+          "basis": "inference"
+        }
+      ],
+      "constraints": [
+        {
+          "text": "May face transportation or work commitments that conflict with fixed class times.",
+          "basis": "unknown"
+        }
+      ],
+      "incentives": [
+        {
+          "text": "May have an incentive to attend classes to gain participation credit.",
+          "basis": "inference"
+        }
+      ],
+      "priorities": [
+        {
+          "text": "May prioritize balancing academic standing with outside obligations.",
+          "basis": "inference"
+        }
+      ]
     }
   ]
 }
