@@ -513,23 +513,44 @@ button:disabled {
   color: #166534;
 }
 
-/* Milestone 3: Perspective Engine Styles */
+/* Milestone 3 & 4: Perspective Engine & SHIFT Experience Styles */
 .perspectives-section {
   margin-top: 24px;
   border-top: 2px solid #e5e7eb;
   padding-top: 24px;
 }
 
-.perspectives-header h2 {
-  font-size: 22px;
-  color: #111827;
-  margin-bottom: 4px;
+/* Context Preservation: Decision Banner */
+.shift-decision-banner {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-left: 5px solid #4f46e5;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
 }
 
-.perspectives-subtitle {
-  font-size: 14px;
-  color: #4b5563;
-  margin-bottom: 18px;
+.shift-decision-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.shift-decision-tag {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #4f46e5;
+}
+
+.shift-decision-text {
+  font-size: 17px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.4;
+  margin: 0;
 }
 
 /* SHIFT Selector Container */
@@ -537,60 +558,85 @@ button:disabled {
   background: #ffffff;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  padding: 14px 18px;
+  padding: 16px 20px;
   margin-bottom: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .shift-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 10px;
+  margin-bottom: 6px;
 }
 
 .shift-tag {
   background-color: #4f46e5;
   color: #ffffff;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 11px;
   padding: 3px 8px;
   border-radius: 4px;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
 }
 
-.shift-label {
+.shift-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.shift-microcopy {
   font-size: 13px;
-  font-weight: 600;
-  color: #374151;
+  color: #64748b;
+  margin-bottom: 14px;
+  line-height: 1.5;
 }
 
 .shift-tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .shift-tab-btn {
-  background-color: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
-  padding: 8px 14px;
-  border-radius: 6px;
+  background-color: #f8fafc;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  padding: 9px 16px;
+  border-radius: 7px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
   transition: all 0.15s ease;
+  user-select: none;
 }
 
 .shift-tab-btn:hover {
-  background-color: #e5e7eb;
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.shift-tab-btn:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.tab-indicator {
+  font-size: 11px;
+  margin-right: 6px;
 }
 
 .shift-tab-active {
   background-color: #4f46e5 !important;
   color: #ffffff !important;
   border-color: #4338ca !important;
-  box-shadow: 0 1px 3px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
+  font-weight: 600;
 }
 
 /* Perspective Detail Card */
@@ -599,37 +645,72 @@ button:disabled {
   border: 1px solid #d1d5db;
   border-radius: 8px;
   padding: 22px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .perspective-card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .perspective-eyebrow {
   display: block;
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #6b7280;
+  letter-spacing: 0.07em;
+  color: #64748b;
   font-weight: 700;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .perspective-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
-  color: #111827;
+  color: #0f172a;
+  margin: 0;
 }
 
-.perspective-stakeholder-reason {
-  font-size: 14px;
-  color: #4b5563;
-  margin-bottom: 20px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #e5e7eb;
+.perspective-inclusion-context {
+  background: #f8fafc;
+  border-left: 3px solid #94a3b8;
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 12px;
+}
+
+.inclusion-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 3px;
+}
+
+.inclusion-reason {
+  font-size: 13.5px;
+  color: #334155;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.perspective-framing-banner {
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin-bottom: 18px;
+  border: 1px dashed #cbd5e1;
+}
+
+.framing-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  font-style: italic;
+  margin: 0;
 }
 
 /* 5 Categories Grid */

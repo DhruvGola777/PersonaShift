@@ -13,7 +13,7 @@ export default function App() {
   const [stakeholderError, setStakeholderError] = useState(null);
   const [confirmedStakeholders, setConfirmedStakeholders] = useState(null);
 
-  // Perspective Engine state (Milestone 3)
+  // Perspective Engine & SHIFT state (Milestone 3 & 4)
   const [perspectives, setPerspectives] = useState(null);
   const [loadingPerspectives, setLoadingPerspectives] = useState(false);
   const [perspectiveError, setPerspectiveError] = useState(null);
@@ -209,7 +209,7 @@ export default function App() {
     setPerspectiveError(null);
   };
 
-  // Generate perspectives for the confirmed stakeholder list (Milestone 3)
+  // Generate perspectives for the confirmed stakeholder list
   const handleGeneratePerspectives = async () => {
     if (!problemResult || !confirmedStakeholders || confirmedStakeholders.length === 0) {
       return;
@@ -235,6 +235,7 @@ export default function App() {
       }
 
       setPerspectives(data.perspectives);
+      // Automatically select the first confirmed stakeholder
       if (confirmedStakeholders.length > 0) {
         setActiveStakeholderId(confirmedStakeholders[0].id);
       }
@@ -245,19 +246,28 @@ export default function App() {
     }
   };
 
-  // Retrieve current active perspective
-  const currentStakeholder = confirmedStakeholders?.find(
-    (s) => s.id === activeStakeholderId
-  );
-  const currentPerspective = perspectives?.find(
-    (p) => p.stakeholderId === activeStakeholderId
-  );
+  // SHIFT Interaction: Safe resolution of active stakeholder & perspective
+  // If activeStakeholderId does not exist, safely fall back to the first available without crashing
+  const resolvedStakeholder =
+    confirmedStakeholders?.find((s) => s.id === activeStakeholderId) ||
+    confirmedStakeholders?.[0] ||
+    null;
+
+  const resolvedPerspective =
+    perspectives?.find((p) => p.stakeholderId === resolvedStakeholder?.id) ||
+    perspectives?.[0] ||
+    null;
+
+  // SHIFT action handler (operates 100% on existing client state, 0 API calls)
+  const handleShiftPerspective = (stakeholderId) => {
+    setActiveStakeholderId(stakeholderId);
+  };
 
   return (
     <div className="container">
       <header className="header">
         <h1>PersonaShift</h1>
-        <p className="subtitle">Milestone 3: Problem Parser + Stakeholder Engine + Perspective Engine</p>
+        <p className="subtitle">Perspective-Mapping &amp; Decision-Exploration Tool</p>
       </header>
 
       <main>
@@ -272,7 +282,7 @@ export default function App() {
               rows={4}
               value={problemInput}
               onChange={(e) => setProblemInput(e.target.value)}
-              placeholder="e.g. Our college is considering replacing physical textbooks with tablets."
+              placeholder="e.g. Our college is considering making attendance mandatory for all students."
               disabled={analyzing}
             />
 
@@ -670,35 +680,50 @@ export default function App() {
               )}
             </div>
 
-            {/* Step 5: Perspective Engine & SHIFT View (Milestone 3) */}
+            {/* Step 5: SHIFT Experience (Milestone 4) */}
             {perspectives && confirmedStakeholders && (
-              <section className="perspectives-section">
-                <div className="perspectives-header">
-                  <h2>Perspectives</h2>
-                  <p className="perspectives-subtitle">
-                    Structured factor mapping for each confirmed stakeholder. Shifting between perspectives reveals different possible priorities and constraints.
-                  </p>
+              <section className="perspectives-section" id="shift-experience">
+                {/* Context Preservation: Decision Banner */}
+                <div className="shift-decision-banner">
+                  <div className="shift-decision-meta">
+                    <span className="shift-decision-tag">DECISION UNDER CONSIDERATION</span>
+                    <span className="badge domain-badge">{problemResult.domain}</span>
+                  </div>
+                  <h3 className="shift-decision-text">{problemResult.decision}</h3>
                 </div>
 
-                {/* SHIFT Selector Tabs */}
+                {/* Central SHIFT Control */}
                 <div className="shift-container">
                   <div className="shift-header">
                     <span className="shift-tag">SHIFT</span>
-                    <span className="shift-label">Select Stakeholder Perspective:</span>
+                    <h2 className="shift-title">SHIFT YOUR PERSPECTIVE</h2>
                   </div>
+                  <p className="shift-microcopy">
+                    SHIFT between stakeholder perspectives to explore how the same decision may look different depending on who is affected.
+                  </p>
 
-                  <div className="shift-tabs" role="tablist">
+                  <div
+                    className="shift-tabs"
+                    role="tablist"
+                    aria-label="Stakeholder Perspectives Selector"
+                  >
                     {confirmedStakeholders.map((s) => {
-                      const isActive = s.id === activeStakeholderId;
+                      const isActive = s.id === resolvedStakeholder?.id;
                       return (
                         <button
                           key={s.id}
                           type="button"
                           role="tab"
+                          id={`shift-tab-${s.id}`}
                           aria-selected={isActive}
+                          aria-controls={`shift-panel-${s.id}`}
+                          tabIndex={0}
                           className={`shift-tab-btn ${isActive ? "shift-tab-active" : ""}`}
-                          onClick={() => setActiveStakeholderId(s.id)}
+                          onClick={() => handleShiftPerspective(s.id)}
                         >
+                          <span className="tab-indicator" aria-hidden="true">
+                            {isActive ? "● " : "○ "}
+                          </span>
                           {s.name}
                         </button>
                       );
@@ -706,41 +731,59 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Current Active Perspective Card */}
-                {currentStakeholder && currentPerspective && (
-                  <div className="perspective-card">
+                {/* Active Perspective Display */}
+                {resolvedStakeholder && resolvedPerspective && (
+                  <div
+                    className="perspective-card"
+                    id={`shift-panel-${resolvedStakeholder.id}`}
+                    role="tabpanel"
+                    aria-labelledby={`shift-tab-${resolvedStakeholder.id}`}
+                  >
+                    {/* Header with Neutral Framing */}
                     <div className="perspective-card-header">
                       <div>
-                        <span className="perspective-eyebrow">Current Perspective</span>
-                        <h3 className="perspective-title">{currentStakeholder.name}</h3>
+                        <span className="perspective-eyebrow">CURRENT PERSPECTIVE</span>
+                        <h3 className="perspective-title">{resolvedStakeholder.name}</h3>
                       </div>
                       <div className="badge-group">
-                        <span className={`badge relevance-${currentStakeholder.relevance}`}>
-                          {currentStakeholder.relevance}
+                        <span className={`badge relevance-${resolvedStakeholder.relevance}`}>
+                          {resolvedStakeholder.relevance}
                         </span>
-                        <span className={`badge source-${currentStakeholder.source || "ai"}`}>
-                          {currentStakeholder.source === "user" ? "user-added" : "ai"}
+                        <span className={`badge source-${resolvedStakeholder.source || "ai"}`}>
+                          {resolvedStakeholder.source === "user" ? "user-added" : "ai"}
                         </span>
                       </div>
                     </div>
 
-                    <p className="perspective-stakeholder-reason">
-                      <strong>Context: </strong>{currentStakeholder.reason}
-                    </p>
+                    {/* Reused Milestone 2 Stakeholder Context */}
+                    <div className="perspective-inclusion-context">
+                      <span className="inclusion-label">Why this perspective is included:</span>
+                      <p className="inclusion-reason">{resolvedStakeholder.reason}</p>
+                    </div>
 
+                    <div className="perspective-framing-banner">
+                      <p className="framing-text">
+                        Possible factors shaping this perspective
+                      </p>
+                    </div>
+
+                    {/* 5 Categories Grid */}
                     <div className="categories-grid">
                       {/* 1. Goals */}
                       <div className="category-card">
                         <div className="category-header">
                           <h4>Goals</h4>
-                          <span className="category-desc">Potential outcomes that may matter</span>
+                          <span className="category-desc">Potential outcomes that may matter to this stakeholder</span>
                         </div>
                         <ul className="items-list">
-                          {currentPerspective.goals.map((item, idx) => (
+                          {resolvedPerspective.goals.map((item, idx) => (
                             <li key={idx} className="perspective-item">
                               <span className="item-text">{item.text}</span>
-                              <span className={`basis-badge basis-${item.basis}`}>
-                                {item.basis}
+                              <span
+                                className={`basis-badge basis-${item.basis}`}
+                                title={`Basis: ${item.basis}`}
+                              >
+                                [{item.basis}]
                               </span>
                             </li>
                           ))}
@@ -754,11 +797,14 @@ export default function App() {
                           <span className="category-desc">Potential risks, downsides, or negative outcomes</span>
                         </div>
                         <ul className="items-list">
-                          {currentPerspective.concerns.map((item, idx) => (
+                          {resolvedPerspective.concerns.map((item, idx) => (
                             <li key={idx} className="perspective-item">
                               <span className="item-text">{item.text}</span>
-                              <span className={`basis-badge basis-${item.basis}`}>
-                                {item.basis}
+                              <span
+                                className={`basis-badge basis-${item.basis}`}
+                                title={`Basis: ${item.basis}`}
+                              >
+                                [{item.basis}]
                               </span>
                             </li>
                           ))}
@@ -769,14 +815,17 @@ export default function App() {
                       <div className="category-card">
                         <div className="category-header">
                           <h4>Constraints</h4>
-                          <span className="category-desc">Limitations or conditions affecting action</span>
+                          <span className="category-desc">Conditions or limitations affecting this stakeholder</span>
                         </div>
                         <ul className="items-list">
-                          {currentPerspective.constraints.map((item, idx) => (
+                          {resolvedPerspective.constraints.map((item, idx) => (
                             <li key={idx} className="perspective-item">
                               <span className="item-text">{item.text}</span>
-                              <span className={`basis-badge basis-${item.basis}`}>
-                                {item.basis}
+                              <span
+                                className={`basis-badge basis-${item.basis}`}
+                                title={`Basis: ${item.basis}`}
+                              >
+                                [{item.basis}]
                               </span>
                             </li>
                           ))}
@@ -787,14 +836,17 @@ export default function App() {
                       <div className="category-card">
                         <div className="category-header">
                           <h4>Incentives</h4>
-                          <span className="category-desc">Factors shaping behavior or positions</span>
+                          <span className="category-desc">Factors that could shape behavior or position</span>
                         </div>
                         <ul className="items-list">
-                          {currentPerspective.incentives.map((item, idx) => (
+                          {resolvedPerspective.incentives.map((item, idx) => (
                             <li key={idx} className="perspective-item">
                               <span className="item-text">{item.text}</span>
-                              <span className={`basis-badge basis-${item.basis}`}>
-                                {item.basis}
+                              <span
+                                className={`basis-badge basis-${item.basis}`}
+                                title={`Basis: ${item.basis}`}
+                              >
+                                [{item.basis}]
                               </span>
                             </li>
                           ))}
@@ -808,11 +860,14 @@ export default function App() {
                           <span className="category-desc">Factors prioritized when evaluating the decision</span>
                         </div>
                         <ul className="items-list">
-                          {currentPerspective.priorities.map((item, idx) => (
+                          {resolvedPerspective.priorities.map((item, idx) => (
                             <li key={idx} className="perspective-item">
                               <span className="item-text">{item.text}</span>
-                              <span className={`basis-badge basis-${item.basis}`}>
-                                {item.basis}
+                              <span
+                                className={`basis-badge basis-${item.basis}`}
+                                title={`Basis: ${item.basis}`}
+                              >
+                                [{item.basis}]
                               </span>
                             </li>
                           ))}
@@ -820,13 +875,14 @@ export default function App() {
                       </div>
                     </div>
 
+                    {/* Accessible Basis Legend */}
                     <div className="basis-legend">
                       <span className="legend-title">Basis Indicators:</span>
-                      <span className="basis-badge basis-fact">Fact</span>
+                      <span className="basis-badge basis-fact">[Fact]</span>
                       <span className="legend-desc">Explicitly stated in problem data</span>
-                      <span className="basis-badge basis-inference">Inference</span>
+                      <span className="basis-badge basis-inference">[Inference]</span>
                       <span className="legend-desc">Reasonable contextual possibility</span>
-                      <span className="basis-badge basis-unknown">Unknown</span>
+                      <span className="basis-badge basis-unknown">[Unknown]</span>
                       <span className="legend-desc">Genuinely unknown or unconfirmed</span>
                     </div>
                   </div>

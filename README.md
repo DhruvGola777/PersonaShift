@@ -2,23 +2,17 @@
 
 > General-purpose perspective-mapping and decision-exploration tool.
 
-## Milestone 3: Perspective Engine (Structured Factor Mapping & SHIFT)
+## Milestone 4: SHIFT Experience
 
 PersonaShift maps perspectives around complex decisions without deciding for the user or claiming to know what real people actually believe.
 
-In Milestone 3, given a validated `ProblemModel` and the user's confirmed stakeholder list, the system generates structured, neutral, uncertainty-aware perspectives containing:
-- **Goals** (1–3 items): Potential outcomes that may matter.
-- **Concerns** (1–3 items): Potential risks, downsides, or negative outcomes.
-- **Constraints** (1–3 items): Limitations or conditions affecting action.
-- **Incentives** (1–3 items): Factors that could shape behavior or position.
-- **Priorities** (1–3 items): Factors prioritized during evaluation.
-
-Every perspective item is attributed with a rigorous basis:
-- `[Fact]`: Explicitly supported by problem facts or explicit user input.
-- `[Inference]`: Reasonable contextual possibilities phrased cautiously ("may", "could", "might").
-- `[Unknown]`: When information is genuinely unavailable.
-
-Perspectives can then be explored instantly via the **SHIFT** selector interface.
+In Milestone 4, the stakeholder selector is elevated into the core **SHIFT** interaction:
+- **Instantaneous client-side switching**: Shifting between stakeholder perspectives happens in pure client state with 0 additional AI or network requests.
+- **Problem & Decision Context Preservation**: The underlying decision under consideration remains persistently anchored above the active perspective.
+- **Neutral Trust Language**: Framed strictly as *"Possible factors shaping this perspective"* and *"Current Perspective: [Stakeholder Name]"* rather than claiming to speak for entire groups.
+- **Reused Stakeholder Context**: Seamlessly integrates the stakeholder's original inclusion reason from Milestone 2.
+- **5 Perspective Categories & Basis Indicators**: Displays Goals, Concerns, Constraints, Incentives, and Priorities with explicit `[Fact]`, `[Inference]`, and `[Unknown]` badges.
+- **Safe Fallback**: Guaranteed application resilience if an active stakeholder ID is missing or modified.
 
 ---
 
