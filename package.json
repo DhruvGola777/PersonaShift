@@ -13,7 +13,8 @@
     "test:parser": "node scripts/test-parser.js",
     "test:stakeholders": "node scripts/test-stakeholders.js",
     "test:perspectives": "node scripts/test-perspectives.js",
-    "test:shift": "node scripts/test-shift.js"
+    "test:shift": "node scripts/test-shift.js",
+    "test:comparison": "node scripts/test-comparison.js"
   },
   "dependencies": {
     "@google/genai": "^2.25.0",

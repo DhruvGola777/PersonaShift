@@ -5,6 +5,8 @@ import { STAKEHOLDER_ENGINE_SYSTEM_PROMPT, buildStakeholderEnginePrompt } from "
 import { StakeholdersGenAiSchema } from "./schemas/stakeholder.js";
 import { PERSPECTIVE_ENGINE_SYSTEM_PROMPT, buildPerspectiveEnginePrompt } from "./prompts/perspectiveEngine.js";
 import { PerspectivesGenAiSchema } from "./schemas/perspective.js";
+import { COMPARISON_ENGINE_SYSTEM_PROMPT, buildComparisonEnginePrompt } from "./prompts/comparisonEngine.js";
+import { ComparisonGenAiSchema } from "./schemas/comparison.js";
 
 // Single place where the model identifier is configured for the project
 export const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-3.1-flash-lite";
@@ -119,3 +121,38 @@ export async function generatePerspectivesAnalysis(problemModel, stakeholders) {
     throw parseError;
   }
 }
+
+/**
+ * Invokes Gemini with structured JSON output configured to match the ComparisonSchema.
+ * @param {object} problemModel - The structured ProblemModel.
+ * @param {Array<object>} stakeholders - The confirmed stakeholders list.
+ * @param {Array<object>} perspectives - The generated perspectives list.
+ * @returns {Promise<object>} The raw JSON object parsed from model output.
+ */
+export async function generateComparisonAnalysis(problemModel, stakeholders, perspectives) {
+  const ai = getGeminiClient();
+
+  const response = await ai.models.generateContent({
+    model: GEMINI_MODEL,
+    contents: buildComparisonEnginePrompt(problemModel, stakeholders, perspectives),
+    config: {
+      systemInstruction: COMPARISON_ENGINE_SYSTEM_PROMPT,
+      responseMimeType: "application/json",
+      responseSchema: ComparisonGenAiSchema
+    }
+  });
+
+  const responseText = response.text;
+  if (!responseText) {
+    throw new Error("No text content returned from Gemini model.");
+  }
+
+  try {
+    return JSON.parse(responseText);
+  } catch (err) {
+    const parseError = new Error("Model response was not valid JSON.");
+    parseError.code = "INVALID_JSON";
+    throw parseError;
+  }
+}
+

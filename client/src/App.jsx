@@ -19,6 +19,12 @@ export default function App() {
   const [perspectiveError, setPerspectiveError] = useState(null);
   const [activeStakeholderId, setActiveStakeholderId] = useState(null);
 
+  // Comparison Engine state (Milestone 5)
+  const [comparison, setComparison] = useState(null);
+  const [loadingComparison, setLoadingComparison] = useState(false);
+  const [comparisonError, setComparisonError] = useState(null);
+  const [isComparisonStale, setIsComparisonStale] = useState(false);
+
   // Editing state for an individual stakeholder
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ name: "", reason: "", relevance: "direct" });
@@ -199,6 +205,10 @@ export default function App() {
     setPerspectives(null);
     setActiveStakeholderId(null);
     setPerspectiveError(null);
+    // Mark comparison as stale / reset
+    setComparison(null);
+    setIsComparisonStale(false);
+    setComparisonError(null);
   };
 
   // Allow re-editing after confirmation
@@ -207,6 +217,9 @@ export default function App() {
     setPerspectives(null);
     setActiveStakeholderId(null);
     setPerspectiveError(null);
+    setComparison(null);
+    setIsComparisonStale(false);
+    setComparisonError(null);
   };
 
   // Generate perspectives for the confirmed stakeholder list
@@ -239,11 +252,57 @@ export default function App() {
       if (confirmedStakeholders.length > 0) {
         setActiveStakeholderId(confirmedStakeholders[0].id);
       }
+
+      // If comparison was already generated, mark it as stale since perspectives changed
+      if (comparison) {
+        setIsComparisonStale(true);
+      }
     } catch (err) {
       setPerspectiveError(err.message || "An error occurred while generating perspectives.");
     } finally {
       setLoadingPerspectives(false);
     }
+  };
+
+  // Generate comparison across all confirmed stakeholder perspectives (Milestone 5)
+  const handleCompare = async () => {
+    if (!problemResult || !confirmedStakeholders || !perspectives) {
+      return;
+    }
+
+    setLoadingComparison(true);
+    setComparisonError(null);
+
+    try {
+      const response = await fetch("/api/compare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          problem: problemResult,
+          stakeholders: confirmedStakeholders,
+          perspectives: perspectives
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate comparison.");
+      }
+
+      setComparison(data.comparison);
+      setIsComparisonStale(false);
+    } catch (err) {
+      setComparisonError(err.message || "An error occurred while comparing perspectives.");
+    } finally {
+      setLoadingComparison(false);
+    }
+  };
+
+  // Helper to resolve stakeholder name from stakeholder ID
+  const getStakeholderName = (id) => {
+    const s = confirmedStakeholders?.find((item) => item.id === id);
+    return s ? s.name : id;
   };
 
   // SHIFT Interaction: Safe resolution of active stakeholder & perspective
@@ -887,6 +946,201 @@ export default function App() {
                     </div>
                   </div>
                 )}
+
+                {/* Step 6: Comparison Engine (Milestone 5) */}
+                <div className="comparison-section" id="comparison-section">
+                  <div className="comparison-trigger-box">
+                    <div className="comparison-trigger-content">
+                      <div className="comparison-header-row">
+                        <span className="comparison-tag">COMPARISON</span>
+                        <h2 className="comparison-title">COMPARE PERSPECTIVES</h2>
+                      </div>
+                      <p className="comparison-subtitle">
+                        Analyze shared goals, different priorities, potential tensions, and dependencies across all confirmed stakeholder perspectives.
+                      </p>
+
+                      {isComparisonStale && (
+                        <div className="stale-warning-banner">
+                          <span className="stale-icon">⚠️</span>
+                          <span className="stale-text">
+                            Stakeholders or perspectives were updated. This comparison may be outdated.
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="comparison-actions">
+                        <button
+                          type="button"
+                          className="btn btn-compare"
+                          onClick={handleCompare}
+                          disabled={loadingComparison}
+                        >
+                          {loadingComparison
+                            ? "Comparing perspectives..."
+                            : comparison
+                            ? isComparisonStale
+                              ? "Regenerate Outdated Comparison"
+                              : "Re-analyze Comparison"
+                            : "Compare Perspectives"}
+                        </button>
+                      </div>
+
+                      {comparisonError && (
+                        <div className="error-box comparison-error-box">
+                          <span>{comparisonError}</span>
+                          <button
+                            type="button"
+                            className="btn-retry"
+                            onClick={handleCompare}
+                            disabled={loadingComparison}
+                          >
+                            Retry Comparison
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {comparison && (
+                    <div className="comparison-results">
+                      {/* 1. Shared Goals */}
+                      <div className="comparison-card">
+                        <div className="comparison-card-header">
+                          <h3>Shared Goals</h3>
+                          <span className="comparison-card-desc">
+                            Goals that appear meaningfully shared across two or more stakeholder perspectives
+                          </span>
+                        </div>
+                        {comparison.sharedGoals && comparison.sharedGoals.length > 0 ? (
+                          <ul className="comparison-list">
+                            {comparison.sharedGoals.map((goal, idx) => (
+                              <li key={idx} className="comparison-list-item shared-goal-item">
+                                <span className="goal-bullet">•</span>
+                                <span className="item-text">{goal}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="empty-comparison-text">
+                            No clear shared goals were identified from the available information.
+                          </p>
+                        )}
+                      </div>
+
+                      {/* 2. Different Priorities */}
+                      <div className="comparison-card">
+                        <div className="comparison-card-header">
+                          <h3>Different Priorities</h3>
+                          <span className="comparison-card-desc">
+                            Areas where stakeholder priorities may differ or emphasize distinct aspects
+                          </span>
+                        </div>
+                        {comparison.differentPriorities && comparison.differentPriorities.length > 0 ? (
+                          <div className="priorities-grid">
+                            {comparison.differentPriorities.map((dp, idx) => (
+                              <div key={idx} className="priority-card">
+                                <h4 className="priority-topic">{dp.topic}</h4>
+                                <div className="priority-columns">
+                                  <div className="priority-column">
+                                    <div className="priority-party-label">
+                                      {dp.stakeholderAId ? getStakeholderName(dp.stakeholderAId) : "Perspective A"}
+                                    </div>
+                                    <p className="priority-perspective-text">{dp.perspectiveA}</p>
+                                  </div>
+                                  <div className="priority-divider" aria-hidden="true">vs</div>
+                                  <div className="priority-column">
+                                    <div className="priority-party-label">
+                                      {dp.stakeholderBId ? getStakeholderName(dp.stakeholderBId) : "Perspective B"}
+                                    </div>
+                                    <p className="priority-perspective-text">{dp.perspectiveB}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="empty-comparison-text">
+                            No clear different priorities were identified from the available information.
+                          </p>
+                        )}
+                      </div>
+
+                      {/* 3. Potential Tensions */}
+                      <div className="comparison-card">
+                        <div className="comparison-card-header">
+                          <h3>Potential Tensions</h3>
+                          <span className="comparison-card-desc">
+                            Situations where two or more priorities could pull the decision in different directions
+                          </span>
+                        </div>
+                        {comparison.tensions && comparison.tensions.length > 0 ? (
+                          <div className="tensions-list">
+                            {comparison.tensions.map((tension, idx) => (
+                              <div key={idx} className="tension-card">
+                                <div className="tension-card-header">
+                                  <h4 className="tension-title">{tension.title}</h4>
+                                  {tension.stakeholderIds && tension.stakeholderIds.length > 0 && (
+                                    <span className="tension-stakeholders-badge">
+                                      {tension.stakeholderIds.map((id) => getStakeholderName(id)).join(" ↔ ")}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="tension-explanation">{tension.explanation}</p>
+                                {tension.affectedPriorities && tension.affectedPriorities.length > 0 && (
+                                  <div className="tension-affected">
+                                    <span className="tension-affected-label">Affected Priorities:</span>
+                                    <ul className="affected-list">
+                                      {tension.affectedPriorities.map((ap, apIdx) => (
+                                        <li key={apIdx} className="affected-item">{ap}</li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="empty-comparison-text">
+                            No clear potential tensions were identified from the available information.
+                          </p>
+                        )}
+                      </div>
+
+                      {/* 4. Dependencies */}
+                      <div className="comparison-card">
+                        <div className="comparison-card-header">
+                          <h3>Dependencies</h3>
+                          <span className="comparison-card-desc">
+                            Where one stakeholder's outcomes or concerns depend on another stakeholder or system
+                          </span>
+                        </div>
+                        {comparison.dependencies && comparison.dependencies.length > 0 ? (
+                          <div className="dependencies-list">
+                            {comparison.dependencies.map((dep, idx) => (
+                              <div key={idx} className="dependency-card">
+                                <p className="dependency-desc">{dep.description}</p>
+                                <div className="dependency-stakeholders">
+                                  <span className="dependency-label">Involved Stakeholders:</span>
+                                  <div className="dependency-badges">
+                                    {dep.stakeholders.map((sId, sIdx) => (
+                                      <span key={sIdx} className="dependency-stakeholder-badge">
+                                        {getStakeholderName(sId)}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="empty-comparison-text">
+                            No clear dependencies were identified from the available information.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </section>
             )}
           </section>

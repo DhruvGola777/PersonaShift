@@ -2,17 +2,18 @@
 
 > General-purpose perspective-mapping and decision-exploration tool.
 
-## Milestone 4: SHIFT Experience
+## Milestone 5: Comparison + Tensions (Cross-Perspective Comparison Engine)
 
-PersonaShift maps perspectives around complex decisions without deciding for the user or claiming to know what real people actually believe.
+PersonaShift maps perspectives around complex decisions without deciding for the user, picking winners, or claiming to know what real people actually believe.
 
-In Milestone 4, the stakeholder selector is elevated into the core **SHIFT** interaction:
-- **Instantaneous client-side switching**: Shifting between stakeholder perspectives happens in pure client state with 0 additional AI or network requests.
-- **Problem & Decision Context Preservation**: The underlying decision under consideration remains persistently anchored above the active perspective.
-- **Neutral Trust Language**: Framed strictly as *"Possible factors shaping this perspective"* and *"Current Perspective: [Stakeholder Name]"* rather than claiming to speak for entire groups.
-- **Reused Stakeholder Context**: Seamlessly integrates the stakeholder's original inclusion reason from Milestone 2.
-- **5 Perspective Categories & Basis Indicators**: Displays Goals, Concerns, Constraints, Incentives, and Priorities with explicit `[Fact]`, `[Inference]`, and `[Unknown]` badges.
-- **Safe Fallback**: Guaranteed application resilience if an active stakeholder ID is missing or modified.
+In Milestone 5, the Comparison Engine analyzes confirmed stakeholder perspectives to surface:
+- **Shared Goals**: Potential outcomes that appear meaningfully shared across two or more stakeholders.
+- **Different Priorities**: Areas where stakeholder priorities may differ or emphasize distinct aspects (preserving stakeholder attribution without ranking or declaring winners).
+- **Potential Tensions**: Situations where two or more priorities pull in different directions (using strictly cautious language like *"may create tension"*).
+- **Dependencies**: Concrete relationships where one stakeholder's ability to achieve a goal or manage a concern depends on another stakeholder or system.
+- **Relationship Traceability**: Directly identifies which stakeholders are connected in tensions and dependencies.
+- **Strict Invariant Validation**: Verifies all referenced stakeholder IDs strictly belong to the confirmed stakeholder list; hallucinated or missing IDs are rejected.
+- **Stale State Detection**: Automatically detects if confirmed stakeholders or perspectives change and prompts for re-analysis rather than serving outdated comparisons.
 
 ---
 
