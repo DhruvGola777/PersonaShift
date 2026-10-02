@@ -1213,3 +1213,252 @@ button:disabled {
   }
 }
 
+/* ==========================================================================
+   Milestone 6: Exploration Engine Styles
+   ========================================================================== */
+.exploration-section {
+  margin-top: 32px;
+  border-top: 2px solid #e2e8f0;
+  padding-top: 28px;
+}
+
+.exploration-trigger-box {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 22px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.exploration-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.exploration-tag {
+  background-color: #059669;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+}
+
+.exploration-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.exploration-subtitle {
+  font-size: 13.5px;
+  color: #64748b;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.btn-explore {
+  background-color: #059669;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  box-shadow: 0 1px 2px rgba(5, 150, 105, 0.2);
+}
+
+.btn-explore:hover:not(:disabled) {
+  background-color: #047857;
+}
+
+.btn-explore:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.exploration-error-box {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.approaches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.approach-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-left: 5px solid #059669;
+  border-radius: 8px;
+  padding: 22px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.approach-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.approach-tag {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  font-weight: 700;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.approach-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.approach-description {
+  font-size: 14px;
+  color: #334155;
+  line-height: 1.55;
+  margin: 0 0 18px 0;
+}
+
+.approach-block {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.approach-block-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 10px 0;
+}
+
+/* Addressed Concerns List */
+.addressed-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.addressed-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 8px 12px;
+  border-radius: 5px;
+}
+
+.addressed-stakeholder {
+  font-weight: 700;
+  color: #0f172a;
+  flex-shrink: 0;
+}
+
+.addressed-concern-text {
+  color: #334155;
+}
+
+/* Potential Trade-offs */
+.tradeoffs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tradeoff-card {
+  background-color: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-left: 3px solid #f59e0b;
+  border-radius: 5px;
+  padding: 10px 14px;
+}
+
+.tradeoff-description {
+  font-size: 13px;
+  color: #78350f;
+  line-height: 1.45;
+  margin: 0 0 8px 0;
+}
+
+.tradeoff-stakeholders {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tradeoff-affected-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #92400e;
+}
+
+.tradeoff-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tradeoff-stakeholder-badge {
+  font-size: 11px;
+  font-weight: 600;
+  background-color: #ffffff;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+/* Implementation Considerations */
+.considerations-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.consideration-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.45;
+}
+
+.consideration-bullet {
+  color: #059669;
+  font-weight: bold;
+}
+
+

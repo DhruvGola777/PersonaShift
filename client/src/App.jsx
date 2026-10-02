@@ -25,6 +25,12 @@ export default function App() {
   const [comparisonError, setComparisonError] = useState(null);
   const [isComparisonStale, setIsComparisonStale] = useState(false);
 
+  // Exploration Engine state (Milestone 6)
+  const [exploration, setExploration] = useState(null);
+  const [explorationLoading, setExplorationLoading] = useState(false);
+  const [explorationError, setExplorationError] = useState(null);
+  const [explorationStale, setExplorationStale] = useState(false);
+
   // Editing state for an individual stakeholder
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ name: "", reason: "", relevance: "direct" });
@@ -205,10 +211,14 @@ export default function App() {
     setPerspectives(null);
     setActiveStakeholderId(null);
     setPerspectiveError(null);
-    // Mark comparison as stale / reset
+    // Reset comparison
     setComparison(null);
     setIsComparisonStale(false);
     setComparisonError(null);
+    // Reset exploration
+    setExploration(null);
+    setExplorationStale(false);
+    setExplorationError(null);
   };
 
   // Allow re-editing after confirmation
@@ -220,6 +230,9 @@ export default function App() {
     setComparison(null);
     setIsComparisonStale(false);
     setComparisonError(null);
+    setExploration(null);
+    setExplorationStale(false);
+    setExplorationError(null);
   };
 
   // Generate perspectives for the confirmed stakeholder list
@@ -257,6 +270,9 @@ export default function App() {
       if (comparison) {
         setIsComparisonStale(true);
       }
+      if (exploration) {
+        setExplorationStale(true);
+      }
     } catch (err) {
       setPerspectiveError(err.message || "An error occurred while generating perspectives.");
     } finally {
@@ -292,10 +308,51 @@ export default function App() {
 
       setComparison(data.comparison);
       setIsComparisonStale(false);
+
+      // If exploration was already generated, mark it as stale since comparison changed
+      if (exploration) {
+        setExplorationStale(true);
+      }
     } catch (err) {
       setComparisonError(err.message || "An error occurred while comparing perspectives.");
     } finally {
       setLoadingComparison(false);
+    }
+  };
+
+  // Generate alternative exploration approaches (Milestone 6)
+  const handleExplore = async () => {
+    if (!problemResult || !confirmedStakeholders || !perspectives || !comparison) {
+      return;
+    }
+
+    setExplorationLoading(true);
+    setExplorationError(null);
+
+    try {
+      const response = await fetch("/api/explore", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          problem: problemResult,
+          stakeholders: confirmedStakeholders,
+          perspectives: perspectives,
+          comparison: comparison
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate exploration approaches.");
+      }
+
+      setExploration(data.exploration);
+      setExplorationStale(false);
+    } catch (err) {
+      setExplorationError(err.message || "An error occurred while generating exploration approaches.");
+    } finally {
+      setExplorationLoading(false);
     }
   };
 
@@ -1141,6 +1198,135 @@ export default function App() {
                     </div>
                   )}
                 </div>
+
+                {/* Step 7: Exploration Engine (Milestone 6) */}
+                {comparison && (
+                  <div className="exploration-section" id="exploration-section">
+                    <div className="exploration-trigger-box">
+                      <div className="exploration-trigger-content">
+                        <div className="exploration-header-row">
+                          <span className="exploration-tag">EXPLORATION</span>
+                          <h2 className="exploration-title">EXPLORE ALTERNATIVE APPROACHES</h2>
+                        </div>
+                        <p className="exploration-subtitle">
+                          These are alternative approaches generated from the perspectives, priorities, tensions, and dependencies above. They are not ranked or recommended.
+                        </p>
+
+                        {explorationStale && (
+                          <div className="stale-warning-banner">
+                            <span className="stale-icon">⚠️</span>
+                            <span className="stale-text">
+                              This exploration is based on an earlier analysis. Regenerate approaches to reflect recent changes.
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="exploration-actions">
+                          <button
+                            type="button"
+                            className="btn btn-explore"
+                            onClick={handleExplore}
+                            disabled={explorationLoading}
+                          >
+                            {explorationLoading
+                              ? "Exploring approaches..."
+                              : exploration
+                              ? explorationStale
+                                ? "Regenerate Outdated Approaches"
+                                : "Re-explore Approaches"
+                              : "Explore Approaches"}
+                          </button>
+                        </div>
+
+                        {explorationError && (
+                          <div className="error-box exploration-error-box">
+                            <span>{explorationError}</span>
+                            <button
+                              type="button"
+                              className="btn-retry"
+                              onClick={handleExplore}
+                              disabled={explorationLoading}
+                            >
+                              Retry Exploration
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {exploration && (
+                      <div className="exploration-results">
+                        <div className="approaches-list">
+                          {exploration.approaches.map((approach, idx) => (
+                            <div key={approach.id || idx} className="approach-card">
+                              <div className="approach-card-header">
+                                <span className="approach-tag">Approach {idx + 1}</span>
+                                <h3 className="approach-title">{approach.title}</h3>
+                              </div>
+                              <p className="approach-description">{approach.description}</p>
+
+                              {/* Addressed Concerns */}
+                              {approach.addresses && approach.addresses.length > 0 && (
+                                <div className="approach-block">
+                                  <h4 className="approach-block-title">Addressed Concerns</h4>
+                                  <ul className="addressed-list">
+                                    {approach.addresses.map((addr, aIdx) => (
+                                      <li key={aIdx} className="addressed-item">
+                                        <span className="addressed-stakeholder">
+                                          {getStakeholderName(addr.stakeholderId)}:
+                                        </span>
+                                        <span className="addressed-concern-text">{addr.concern}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+
+                              {/* Trade-offs */}
+                              {approach.tradeoffs && approach.tradeoffs.length > 0 && (
+                                <div className="approach-block">
+                                  <h4 className="approach-block-title">Potential Trade-offs</h4>
+                                  <div className="tradeoffs-list">
+                                    {approach.tradeoffs.map((tradeoff, tIdx) => (
+                                      <div key={tIdx} className="tradeoff-card">
+                                        <p className="tradeoff-description">{tradeoff.description}</p>
+                                        <div className="tradeoff-stakeholders">
+                                          <span className="tradeoff-affected-label">Affected:</span>
+                                          <div className="tradeoff-badges">
+                                            {tradeoff.affectedStakeholders.map((sId, sIdx) => (
+                                              <span key={sIdx} className="tradeoff-stakeholder-badge">
+                                                {getStakeholderName(sId)}
+                                              </span>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Implementation Considerations */}
+                              {approach.implementationConsiderations && approach.implementationConsiderations.length > 0 && (
+                                <div className="approach-block">
+                                  <h4 className="approach-block-title">Implementation Considerations</h4>
+                                  <ul className="considerations-list">
+                                    {approach.implementationConsiderations.map((item, cIdx) => (
+                                      <li key={cIdx} className="consideration-item">
+                                        <span className="consideration-bullet">•</span>
+                                        <span className="consideration-text">{item}</span>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </section>
             )}
           </section>

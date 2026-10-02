@@ -2,18 +2,18 @@
 
 > General-purpose perspective-mapping and decision-exploration tool.
 
-## Milestone 5: Comparison + Tensions (Cross-Perspective Comparison Engine)
+## Milestone 6: Exploration + Tradeoffs (Alternative Approaches Engine)
 
-PersonaShift maps perspectives around complex decisions without deciding for the user, picking winners, or claiming to know what real people actually believe.
+PersonaShift enables users to move from *"What perspectives and tensions exist?"* to *"What different approaches could address those tensions?"* without turning into a recommendation engine.
 
-In Milestone 5, the Comparison Engine analyzes confirmed stakeholder perspectives to surface:
-- **Shared Goals**: Potential outcomes that appear meaningfully shared across two or more stakeholders.
-- **Different Priorities**: Areas where stakeholder priorities may differ or emphasize distinct aspects (preserving stakeholder attribution without ranking or declaring winners).
-- **Potential Tensions**: Situations where two or more priorities pull in different directions (using strictly cautious language like *"may create tension"*).
-- **Dependencies**: Concrete relationships where one stakeholder's ability to achieve a goal or manage a concern depends on another stakeholder or system.
-- **Relationship Traceability**: Directly identifies which stakeholders are connected in tensions and dependencies.
-- **Strict Invariant Validation**: Verifies all referenced stakeholder IDs strictly belong to the confirmed stakeholder list; hallucinated or missing IDs are rejected.
-- **Stale State Detection**: Automatically detects if confirmed stakeholders or perspectives change and prompts for re-analysis rather than serving outdated comparisons.
+In Milestone 6, the Exploration Engine consumes the full analytical pipeline (ProblemModel, confirmed stakeholders, perspectives, and comparison tensions/dependencies) to generate multiple plausible alternative approaches:
+- **Meaningfully Different Dimensions**: Approaches differ by scope, sequencing, implementation model, and discretion/safeguards rather than trivial wording variations.
+- **Strict Grounding in Existing Concerns**: Every addressed concern maps directly to an actual concern present in that stakeholder's existing perspective.
+- **Surfaced Trade-offs**: Highlights potential downsides, administrative frictions, or costs using cautious phrasing (*"may require"*, *"could increase"*, *"may create"*).
+- **Practical Implementation Considerations**: Identifies operational, technical, or timing factors required to explore each approach.
+- **Traceability & Invariant Validation**: Validates that all referenced stakeholders exist in the confirmed list; rejects unknown IDs, duplicate approach IDs, or ranking language.
+- **No Ranking, Scoring, or Recommendations**: Approaches are presented as alternatives for exploration; the user remains 100% responsible for deciding.
+- **Stale State Management**: Detects changes in stakeholders, perspectives, or comparison, warning the user and requiring re-exploration.
 
 ---
 
