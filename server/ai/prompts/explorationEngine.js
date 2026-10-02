@@ -20,7 +20,7 @@ CRITICAL PRODUCT PRINCIPLES:
   * Degree of Discretion/Flexibility (centralized rules vs departmental adaptability)
   Avoid trivial wording variations of the same idea.
 - GROUNDING: Every approach MUST be strictly grounded in the supplied analysis:
-  * In the 'addresses' list, connect each action directly to an actual concern present in that stakeholder's perspective.
+  * In the 'addresses' list, connect each action directly to an actual concern present in that stakeholder's 'Concerns:' list. Explicitly cite or closely paraphrase the specific concern text from that list. Do NOT invent new concerns or substitute items from priorities or constraints.
   * In the 'tradeoffs' list, explicitly surface the potential downsides, frictions, or costs that this approach could create.
 - CAUTIOUS TRUST LANGUAGE: Use strictly cautious, probabilistic phrasing for trade-offs and consequences:
   * "may require"
@@ -112,7 +112,7 @@ ${
    - Unique id (e.g. 'phased-implementation')
    - title
    - description
-   - addresses: list of { stakeholderId, concern } referencing actual concerns from the perspective data above.
+   - addresses: list of { stakeholderId, concern } where each 'concern' MUST be chosen directly from that stakeholder's 'Concerns:' list above (quote or closely paraphrase one of the specific items listed under 'Concerns:', NOT from 'Constraints:' or 'Priorities:'). Do not invent new concerns.
    - tradeoffs: list of { description, affectedStakeholders } highlighting real compromises, frictions, or costs using cautious phrasing ("may require", "could complicate").
    - implementationConsiderations: list of practical operational factors.
 3. Every referenced stakeholderId MUST strictly exist in Allowed Stakeholder IDs: [ ${stakeholderIdList.join(", ")} ].

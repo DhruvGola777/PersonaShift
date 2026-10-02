@@ -6,40 +6,101 @@ const STOP_WORDS = new Set([
   "by", "from", "is", "are", "was", "were", "be", "been", "being", "have", "has",
   "had", "do", "does", "did", "may", "could", "might", "would", "should", "shall",
   "will", "can", "their", "they", "them", "about", "that", "this", "these", "those",
-  "such", "into", "over", "after", "before", "between", "under", "above"
+  "such", "into", "over", "after", "before", "between", "under", "above", "than"
 ]);
 
-function extractSignificantTokens(text) {
+// Generic domain terms that alone do not provide sufficient grounding evidence
+const GENERIC_DOMAIN_WORDS = new Set([
+  "student", "students", "faculty", "policy", "policies", "issue", "issues",
+  "impact", "impacts", "concern", "concerns", "stakeholder", "stakeholders",
+  "problem", "problems", "system", "process", "processes", "approach", "approaches",
+  "group", "groups", "organization", "decision", "decisions", "area", "areas"
+]);
+
+function normalizeText(text) {
+  if (!text || typeof text !== "string") return "";
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractMeaningfulTokens(text) {
   if (!text || typeof text !== "string") return [];
   return text
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, " ")
     .split(/\s+/)
-    .filter((w) => w.length >= 3 && !STOP_WORDS.has(w));
+    .filter((w) => w.length >= 3 && !STOP_WORDS.has(w) && !GENERIC_DOMAIN_WORDS.has(w));
+}
+
+function tokensMatch(aToken, cToken) {
+  if (aToken === cToken) return true;
+  // If both tokens are 4+ characters, allow prefix stem matching
+  if (aToken.length >= 4 && cToken.length >= 4) {
+    const minLen = Math.min(aToken.length, cToken.length);
+    const stemLen = Math.min(minLen, 5);
+    if (stemLen >= 4 && aToken.slice(0, stemLen) === cToken.slice(0, stemLen)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
  * Checks whether an addressed concern is grounded in the stakeholder's perspective concerns.
- * Uses normalized token and stem matching to allow valid paraphrasing while rejecting invented concerns.
+ *
+ * Rules:
+ * 1. Normalized phrase match: If the addressed concern contains an existing concern as a substring,
+ *    or the existing concern contains the addressed concern (ignoring punctuation/case), it passes.
+ * 2. Token overlap match (per individual concern):
+ *    - Filters out syntactic stop words AND generic domain words ("policy", "student", "concern", etc.).
+ *    - Evaluates against each existing concern individually.
+ *    - Requires at least 2 distinct meaningful token/stem matches against a single concern.
+ *    - If the target concern has only 1 meaningful token, matching that entire token satisfies grounding.
  */
 export function isConcernGrounded(addressedText, perspective) {
   if (!addressedText || !perspective) return false;
-  const addressedTokens = extractSignificantTokens(addressedText);
-  if (addressedTokens.length === 0) return true;
+  const concerns = perspective.concerns || [];
+  if (concerns.length === 0) return false;
 
-  const concernTexts = (perspective.concerns || []).map((c) => c.text);
-  const allConcernWords = extractSignificantTokens(concernTexts.join(" "));
+  const normAddressed = normalizeText(addressedText);
+  if (!normAddressed) return false;
 
-  return addressedTokens.some((aToken) => {
-    return allConcernWords.some((cToken) => {
-      return (
-        aToken === cToken ||
-        (aToken.length >= 4 &&
-          cToken.length >= 4 &&
-          (aToken.startsWith(cToken.slice(0, 4)) || cToken.startsWith(aToken.slice(0, 4))))
-      );
-    });
-  });
+  const addressedTokens = extractMeaningfulTokens(addressedText);
+
+  // Evaluate against each perspective concern individually
+  for (const c of concerns) {
+    const normConcern = normalizeText(c.text);
+    if (!normConcern) continue;
+
+    // Rule 1: Exact or substring phrase match
+    if (normAddressed.includes(normConcern) || normConcern.includes(normAddressed)) {
+      return true;
+    }
+
+    // Rule 2: Multi-token meaningful overlap against this specific concern
+    const concernTokens = extractMeaningfulTokens(c.text);
+    if (concernTokens.length === 0) continue;
+
+    const matchedTokens = new Set();
+    for (const aTok of addressedTokens) {
+      for (const cTok of concernTokens) {
+        if (tokensMatch(aTok, cTok)) {
+          matchedTokens.add(aTok);
+          break;
+        }
+      }
+    }
+
+    const requiredMatches = Math.min(2, concernTokens.length);
+    if (matchedTokens.size >= requiredMatches && matchedTokens.size >= 1) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 /**

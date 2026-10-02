@@ -265,16 +265,16 @@ async function runTests() {
   assert.strictEqual(isExplorationStale, true, "Exploration must be marked stale when underlying inputs change.");
   console.log("✓ Stale state flag correctly triggered.");
 
-  // Test 2.6: Valid summarized concern passes grounding
-  console.log("\n[Validation 6] Valid summarized concern passes grounding...");
-  const validGroundedExploration = {
+  // Test 2.6: Valid paraphrase passes grounding (PASS)
+  console.log("\n[Validation 6] Valid paraphrase passes grounding...");
+  const validParaphraseExploration = {
     approaches: [
       {
-        id: "valid-grounded-approach",
+        id: "valid-paraphrase-approach",
         title: "Medical and Emergency Accommodation Policy",
         description: "Institutes clear waiver processes for students experiencing illness or personal emergencies.",
         addresses: [
-          // Student concern in mockPerspectives is "Penalties for illness"
+          // Existing student concern is "Penalties for illness"
           { stakeholderId: "student", concern: "Grade penalties resulting from illness or unexpected personal emergencies" }
         ],
         tradeoffs: [{ description: "May increase administrative review time for instructors.", affectedStakeholders: ["faculty"] }],
@@ -282,11 +282,55 @@ async function runTests() {
       }
     ]
   };
-  validateExplorationInvariants(validGroundedExploration, mockStakeholders, mockPerspectives);
-  console.log("✓ Valid summarized concern successfully passed grounding validation.");
+  validateExplorationInvariants(validParaphraseExploration, mockStakeholders, mockPerspectives);
+  console.log("✓ Valid paraphrase ('Grade penalties resulting from illness...') successfully PASSED.");
 
-  // Test 2.7: Invented concern is rejected by grounding validator
-  console.log("\n[Validation 7] Invented concern is rejected by grounding validator...");
+  // Test 2.7: Exact concern passes grounding (PASS)
+  console.log("\n[Validation 7] Exact concern passes grounding...");
+  const exactConcernExploration = {
+    approaches: [
+      {
+        id: "exact-concern-approach",
+        title: "Strict Illness Policy",
+        description: "Focuses precisely on existing penalties.",
+        addresses: [
+          // Exact text match from student concern
+          { stakeholderId: "student", concern: "Penalties for illness" }
+        ],
+        tradeoffs: [{ description: "May require coordination.", affectedStakeholders: ["faculty"] }],
+        implementationConsiderations: ["Publish clear guidelines"]
+      }
+    ]
+  };
+  validateExplorationInvariants(exactConcernExploration, mockStakeholders, mockPerspectives);
+  console.log("✓ Exact concern ('Penalties for illness') successfully PASSED.");
+
+  // Test 2.8: One generic/common-token overlap with an invented concern is rejected (REJECT)
+  console.log("\n[Validation 8] One generic/common-token overlap with an invented concern is rejected...");
+  const singleTokenOverlapExploration = {
+    approaches: [
+      {
+        id: "single-token-overlap-approach",
+        title: "Alien Intervention Policy",
+        description: "Addresses alien concerns with single token overlap.",
+        addresses: [
+          // Shares only generic/domain words + single token "penalties", but is fundamentally an invented concern
+          { stakeholderId: "student", concern: "Institutional policy penalties regarding alien UFO abductions on campus" }
+        ],
+        tradeoffs: [{ description: "May cost funds.", affectedStakeholders: ["student"] }],
+        implementationConsiderations: ["Install radar"]
+      }
+    ]
+  };
+  assert.throws(
+    () => validateExplorationInvariants(singleTokenOverlapExploration, mockStakeholders, mockPerspectives),
+    /cannot be traced to that stakeholder's existing perspective concerns/,
+    "Expected rejection of single-token overlap with invented concern"
+  );
+  console.log("✓ Single-token overlap with invented concern was successfully REJECTED.");
+
+  // Test 2.9: Completely invented concern is rejected (REJECT)
+  console.log("\n[Validation 9] Completely invented concern is rejected...");
   const inventedConcernExploration = {
     approaches: [
       {
@@ -294,7 +338,6 @@ async function runTests() {
         title: "Extraterrestrial Defense Policy",
         description: "Prepares classrooms against extraterrestrial intrusions.",
         addresses: [
-          // Invented concern completely unrelated to student perspective
           { stakeholderId: "student", concern: "Alien abduction and UFO disruption during exams" }
         ],
         tradeoffs: [{ description: "May cost funds.", affectedStakeholders: ["student"] }],
@@ -307,10 +350,10 @@ async function runTests() {
     /cannot be traced to that stakeholder's existing perspective concerns/,
     "Expected rejection of invented concern"
   );
-  console.log("✓ Clearly invented concern was successfully rejected.");
+  console.log("✓ Completely invented concern was successfully REJECTED.");
 
-  // Test 2.8: Cross-stakeholder concern is rejected
-  console.log("\n[Validation 8] Cross-stakeholder concern attributed to wrong stakeholder is rejected...");
+  // Test 2.10: Concern belonging to another stakeholder is rejected (REJECT)
+  console.log("\n[Validation 10] Concern belonging to another stakeholder is rejected...");
   const crossStakeholderExploration = {
     approaches: [
       {
@@ -319,7 +362,7 @@ async function runTests() {
         description: "Assists with daily roll-call administration.",
         addresses: [
           // Faculty concern in mockPerspectives is "Administrative burden", but erroneously attributed to "student"
-          { stakeholderId: "student", concern: "Heavy administrative burden of taking attendance and verifying notes" }
+          { stakeholderId: "student", concern: "Heavy administrative burden of taking attendance and verifying doctor notes" }
         ],
         tradeoffs: [{ description: "May require staff.", affectedStakeholders: ["student"] }],
         implementationConsiderations: ["Hire aides"]
@@ -331,7 +374,7 @@ async function runTests() {
     /cannot be traced to that stakeholder's existing perspective concerns/,
     "Expected rejection of cross-stakeholder concern attributed to wrong stakeholder"
   );
-  console.log("✓ Cross-stakeholder concern attributed to wrong stakeholder was successfully rejected.");
+  console.log("✓ Concern belonging to another stakeholder was successfully REJECTED.");
 
   console.log("\n==================================================");
   console.log("All Milestone 6 Exploration Tests Passed! ✓");
