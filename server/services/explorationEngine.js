@@ -1,6 +1,47 @@
 import { generateExplorationAnalysis } from "../ai/gemini.js";
 import { ExplorationSchema } from "../ai/schemas/exploration.js";
 
+const STOP_WORDS = new Set([
+  "a", "an", "the", "and", "or", "in", "on", "at", "to", "for", "of", "with",
+  "by", "from", "is", "are", "was", "were", "be", "been", "being", "have", "has",
+  "had", "do", "does", "did", "may", "could", "might", "would", "should", "shall",
+  "will", "can", "their", "they", "them", "about", "that", "this", "these", "those",
+  "such", "into", "over", "after", "before", "between", "under", "above"
+]);
+
+function extractSignificantTokens(text) {
+  if (!text || typeof text !== "string") return [];
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length >= 3 && !STOP_WORDS.has(w));
+}
+
+/**
+ * Checks whether an addressed concern is grounded in the stakeholder's perspective concerns.
+ * Uses normalized token and stem matching to allow valid paraphrasing while rejecting invented concerns.
+ */
+export function isConcernGrounded(addressedText, perspective) {
+  if (!addressedText || !perspective) return false;
+  const addressedTokens = extractSignificantTokens(addressedText);
+  if (addressedTokens.length === 0) return true;
+
+  const concernTexts = (perspective.concerns || []).map((c) => c.text);
+  const allConcernWords = extractSignificantTokens(concernTexts.join(" "));
+
+  return addressedTokens.some((aToken) => {
+    return allConcernWords.some((cToken) => {
+      return (
+        aToken === cToken ||
+        (aToken.length >= 4 &&
+          cToken.length >= 4 &&
+          (aToken.startsWith(cToken.slice(0, 4)) || cToken.startsWith(aToken.slice(0, 4))))
+      );
+    });
+  });
+}
+
 /**
  * Validates application-level invariants for generated exploration approaches:
  * - Every approach ID is non-empty and unique.
@@ -81,9 +122,15 @@ export function validateExplorationInvariants(exploration, confirmedStakeholders
         throw new Error(`Approach "${id}" addresses stakeholder without perspective: "${sId}".`);
       }
 
-      // Grounding check: verify that addressed concern is non-empty and has some semantic relation
       if (!addr.concern?.trim()) {
         throw new Error(`Approach "${id}" contains empty concern for stakeholder "${sId}".`);
+      }
+
+      // Grounding validation: verify addressed concern is traced to that stakeholder's concerns
+      if (!isConcernGrounded(addr.concern, p)) {
+        throw new Error(
+          `Approach "${id}" addresses concern for "${sId}" that cannot be traced to that stakeholder's existing perspective concerns: "${addr.concern}".`
+        );
       }
     }
 

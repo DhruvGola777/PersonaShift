@@ -265,6 +265,74 @@ async function runTests() {
   assert.strictEqual(isExplorationStale, true, "Exploration must be marked stale when underlying inputs change.");
   console.log("✓ Stale state flag correctly triggered.");
 
+  // Test 2.6: Valid summarized concern passes grounding
+  console.log("\n[Validation 6] Valid summarized concern passes grounding...");
+  const validGroundedExploration = {
+    approaches: [
+      {
+        id: "valid-grounded-approach",
+        title: "Medical and Emergency Accommodation Policy",
+        description: "Institutes clear waiver processes for students experiencing illness or personal emergencies.",
+        addresses: [
+          // Student concern in mockPerspectives is "Penalties for illness"
+          { stakeholderId: "student", concern: "Grade penalties resulting from illness or unexpected personal emergencies" }
+        ],
+        tradeoffs: [{ description: "May increase administrative review time for instructors.", affectedStakeholders: ["faculty"] }],
+        implementationConsiderations: ["Establish digital doctor-note submission portal"]
+      }
+    ]
+  };
+  validateExplorationInvariants(validGroundedExploration, mockStakeholders, mockPerspectives);
+  console.log("✓ Valid summarized concern successfully passed grounding validation.");
+
+  // Test 2.7: Invented concern is rejected by grounding validator
+  console.log("\n[Validation 7] Invented concern is rejected by grounding validator...");
+  const inventedConcernExploration = {
+    approaches: [
+      {
+        id: "invented-concern-approach",
+        title: "Extraterrestrial Defense Policy",
+        description: "Prepares classrooms against extraterrestrial intrusions.",
+        addresses: [
+          // Invented concern completely unrelated to student perspective
+          { stakeholderId: "student", concern: "Alien abduction and UFO disruption during exams" }
+        ],
+        tradeoffs: [{ description: "May cost funds.", affectedStakeholders: ["student"] }],
+        implementationConsiderations: ["Install radar"]
+      }
+    ]
+  };
+  assert.throws(
+    () => validateExplorationInvariants(inventedConcernExploration, mockStakeholders, mockPerspectives),
+    /cannot be traced to that stakeholder's existing perspective concerns/,
+    "Expected rejection of invented concern"
+  );
+  console.log("✓ Clearly invented concern was successfully rejected.");
+
+  // Test 2.8: Cross-stakeholder concern is rejected
+  console.log("\n[Validation 8] Cross-stakeholder concern attributed to wrong stakeholder is rejected...");
+  const crossStakeholderExploration = {
+    approaches: [
+      {
+        id: "cross-stakeholder-approach",
+        title: "Faculty Burden Relief",
+        description: "Assists with daily roll-call administration.",
+        addresses: [
+          // Faculty concern in mockPerspectives is "Administrative burden", but erroneously attributed to "student"
+          { stakeholderId: "student", concern: "Heavy administrative burden of taking attendance and verifying notes" }
+        ],
+        tradeoffs: [{ description: "May require staff.", affectedStakeholders: ["student"] }],
+        implementationConsiderations: ["Hire aides"]
+      }
+    ]
+  };
+  assert.throws(
+    () => validateExplorationInvariants(crossStakeholderExploration, mockStakeholders, mockPerspectives),
+    /cannot be traced to that stakeholder's existing perspective concerns/,
+    "Expected rejection of cross-stakeholder concern attributed to wrong stakeholder"
+  );
+  console.log("✓ Cross-stakeholder concern attributed to wrong stakeholder was successfully rejected.");
+
   console.log("\n==================================================");
   console.log("All Milestone 6 Exploration Tests Passed! ✓");
   console.log("==================================================");
