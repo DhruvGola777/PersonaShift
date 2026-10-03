@@ -31,6 +31,11 @@ export default function App() {
   const [explorationError, setExplorationError] = useState(null);
   const [explorationStale, setExplorationStale] = useState(false);
 
+  // Multimodal Perspective Audio state (Milestone 7)
+  const [audioCache, setAudioCache] = useState({});
+  const [audioLoadingId, setAudioLoadingId] = useState(null);
+  const [audioErrorMap, setAudioErrorMap] = useState({});
+
   // Editing state for an individual stakeholder
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ name: "", reason: "", relevance: "direct" });
@@ -62,6 +67,9 @@ export default function App() {
     setActiveStakeholderId(null);
     setStakeholderError(null);
     setPerspectiveError(null);
+    setAudioCache({});
+    setAudioErrorMap({});
+    setAudioLoadingId(null);
 
     try {
       const response = await fetch("/api/analyze", {
@@ -219,6 +227,10 @@ export default function App() {
     setExploration(null);
     setExplorationStale(false);
     setExplorationError(null);
+    // Reset audio (Milestone 7)
+    setAudioCache({});
+    setAudioErrorMap({});
+    setAudioLoadingId(null);
   };
 
   // Allow re-editing after confirmation
@@ -233,6 +245,10 @@ export default function App() {
     setExploration(null);
     setExplorationStale(false);
     setExplorationError(null);
+    // Reset audio (Milestone 7)
+    setAudioCache({});
+    setAudioErrorMap({});
+    setAudioLoadingId(null);
   };
 
   // Generate perspectives for the confirmed stakeholder list
@@ -243,6 +259,10 @@ export default function App() {
 
     setLoadingPerspectives(true);
     setPerspectiveError(null);
+    // Invalidate prior audio when perspectives are regenerated
+    setAudioCache({});
+    setAudioErrorMap({});
+    setAudioLoadingId(null);
 
     try {
       const response = await fetch("/api/perspectives", {
@@ -277,6 +297,49 @@ export default function App() {
       setPerspectiveError(err.message || "An error occurred while generating perspectives.");
     } finally {
       setLoadingPerspectives(false);
+    }
+  };
+
+  // Generate or retrieve cached audio narration for the active perspective (Milestone 7)
+  const handleGenerateAudio = async (stakeholder, perspective) => {
+    if (!problemResult || !stakeholder || !perspective) return;
+
+    const cacheKey = `${stakeholder.id}::${JSON.stringify(perspective)}`;
+    if (audioCache[cacheKey]) {
+      return; // Already cached
+    }
+
+    setAudioLoadingId(stakeholder.id);
+    setAudioErrorMap((prev) => ({ ...prev, [stakeholder.id]: null }));
+
+    try {
+      const response = await fetch("/api/perspective-audio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          problem: problemResult,
+          stakeholder,
+          perspective
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate audio narration.");
+      }
+
+      setAudioCache((prev) => ({
+        ...prev,
+        [cacheKey]: data.audioUrl
+      }));
+    } catch (err) {
+      setAudioErrorMap((prev) => ({
+        ...prev,
+        [stakeholder.id]: err.message || "Audio is unavailable."
+      }));
+    } finally {
+      setAudioLoadingId(null);
     }
   };
 
@@ -882,6 +945,76 @@ export default function App() {
                         Possible factors shaping this perspective
                       </p>
                     </div>
+
+                    {/* Multimodal Perspective Audio Narration (Milestone 7) */}
+                    {(() => {
+                      const currentKey = `${resolvedStakeholder.id}::${JSON.stringify(resolvedPerspective)}`;
+                      const cachedAudioUrl = audioCache[currentKey];
+                      const isGenerating = audioLoadingId === resolvedStakeholder.id;
+                      const audioError = audioErrorMap[resolvedStakeholder.id];
+
+                      return (
+                        <div className="perspective-audio-box" aria-label="Perspective Audio Control">
+                          {isGenerating ? (
+                            <div className="audio-status-box audio-loading-box" role="status" aria-live="polite">
+                              <span className="audio-spinner" aria-hidden="true" />
+                              <span className="audio-loading-text">Hearing the perspective...</span>
+                            </div>
+                          ) : cachedAudioUrl ? (
+                            <div className="audio-player-wrapper">
+                              <div className="audio-player-meta">
+                                <span className="audio-badge">AI-generated narration</span>
+                                <span className="audio-disclaimer">Neutral audio reading of structured perspective factors</span>
+                              </div>
+                              <audio
+                                controls
+                                src={cachedAudioUrl}
+                                className="perspective-audio-player"
+                                aria-label={`Audio narration for ${resolvedStakeholder.name} perspective`}
+                              >
+                                Your browser does not support the audio element.
+                              </audio>
+                            </div>
+                          ) : audioError ? (
+                            <div className="audio-status-box audio-error-box" role="alert">
+                              <span className="audio-error-text">{audioError}</span>
+                              <button
+                                type="button"
+                                className="audio-retry-btn"
+                                onClick={() => handleGenerateAudio(resolvedStakeholder, resolvedPerspective)}
+                              >
+                                Retry
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="audio-action-wrapper">
+                              <button
+                                type="button"
+                                className="hear-perspective-btn"
+                                onClick={() => handleGenerateAudio(resolvedStakeholder, resolvedPerspective)}
+                                disabled={Boolean(audioLoadingId)}
+                                aria-label={`Hear audio narration for ${resolvedStakeholder.name}`}
+                              >
+                                <svg
+                                  className="audio-icon"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  aria-hidden="true"
+                                >
+                                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+                                </svg>
+                                <span>Hear this perspective</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
 
                     {/* 5 Categories Grid */}
                     <div className="categories-grid">

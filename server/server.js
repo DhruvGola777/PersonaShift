@@ -6,6 +6,7 @@ import stakeholdersRouter from "./routes/stakeholders.js";
 import perspectivesRouter from "./routes/perspectives.js";
 import compareRouter from "./routes/compare.js";
 import exploreRouter from "./routes/explore.js";
+import perspectiveAudioRouter from "./routes/perspectiveAudio.js";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -31,6 +32,7 @@ app.use("/api", stakeholdersRouter);
 app.use("/api", perspectivesRouter);
 app.use("/api", compareRouter);
 app.use("/api", exploreRouter);
+app.use("/api", perspectiveAudioRouter);
 
 // Global Error Handler (handles malformed JSON payloads and unexpected errors)
 app.use((err, req, res, next) => {

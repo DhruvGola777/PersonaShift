@@ -15,7 +15,9 @@
     "test:perspectives": "node scripts/test-perspectives.js",
     "test:shift": "node scripts/test-shift.js",
     "test:comparison": "node scripts/test-comparison.js",
-    "test:exploration": "node scripts/test-exploration.js"
+    "test:exploration": "node scripts/test-exploration.js",
+    "test:deapi": "node scripts/test-deapi.js",
+    "test": "node scripts/test-deapi.js"
   },
   "dependencies": {
     "@google/genai": "^2.25.0",
