@@ -472,7 +472,11 @@ export default function App() {
             />
 
             <div className="button-row">
-              <button type="submit" disabled={analyzing || !problemInput.trim()}>
+              <button
+                type="submit"
+                disabled={analyzing || !problemInput.trim()}
+                aria-label="Analyze problem input"
+              >
                 {analyzing ? "Analyzing..." : "Analyze"}
               </button>
             </div>
@@ -485,7 +489,7 @@ export default function App() {
           )}
 
           {analyzing && (
-            <div className="loading-box">
+            <div className="loading-box" role="status" aria-live="polite">
               <p>Parsing problem into structured model...</p>
             </div>
           )}
@@ -573,6 +577,7 @@ export default function App() {
                     type="button"
                     className="secondary-btn"
                     onClick={() => fetchStakeholders(problemResult)}
+                    aria-label="Discover stakeholders"
                   >
                     Discover Stakeholders
                   </button>
@@ -580,19 +585,20 @@ export default function App() {
               </div>
 
               {loadingStakeholders && (
-                <div className="loading-box">
-                  <p>Discovering affected stakeholders using Gemini...</p>
+                <div className="loading-box" role="status" aria-live="polite">
+                  <p>Mapping stakeholders...</p>
                 </div>
               )}
 
               {stakeholderError && (
-                <div className="error-box">
+                <div className="error-box" role="alert">
                   <strong>Error: </strong> {stakeholderError}
                   <div style={{ marginTop: "8px" }}>
                     <button
                       type="button"
                       className="secondary-btn"
                       onClick={() => fetchStakeholders(problemResult)}
+                      aria-label="Retry discovering stakeholders"
                     >
                       Retry Discovery
                     </button>
@@ -605,13 +611,18 @@ export default function App() {
                 <div className="confirmed-section">
                   <div className="confirmed-header">
                     <h3>Confirmed Stakeholder List ({confirmedStakeholders.length})</h3>
-                    <button type="button" className="secondary-btn" onClick={handleReEdit}>
+                    <button
+                      type="button"
+                      className="secondary-btn"
+                      onClick={handleReEdit}
+                      aria-label="Edit confirmed stakeholders"
+                    >
                       Edit Stakeholders
                     </button>
                   </div>
 
                   {confirmedStakeholders.length === 0 ? (
-                    <p className="empty-text">No stakeholders were selected.</p>
+                    <p className="empty-text">No stakeholders confirmed yet.</p>
                   ) : (
                     <div className="stakeholder-list">
                       {confirmedStakeholders.map((s) => (
@@ -644,28 +655,30 @@ export default function App() {
                         className="confirm-btn"
                         onClick={handleGeneratePerspectives}
                         disabled={loadingPerspectives || confirmedStakeholders.length === 0}
+                        aria-label="Generate perspectives for confirmed stakeholders"
                       >
                         {loadingPerspectives
-                          ? "Generating Perspectives..."
+                          ? "Generating perspectives..."
                           : `Generate Perspectives (${confirmedStakeholders.length})`}
                       </button>
                     </div>
                   )}
 
                   {loadingPerspectives && (
-                    <div className="loading-box">
-                      <p>Constructing neutral perspective models using Gemini...</p>
+                    <div className="loading-box" role="status" aria-live="polite">
+                      <p>Generating perspectives...</p>
                     </div>
                   )}
 
                   {perspectiveError && (
-                    <div className="error-box">
+                    <div className="error-box" role="alert">
                       <strong>Error: </strong> {perspectiveError}
                       <div style={{ marginTop: "8px" }}>
                         <button
                           type="button"
                           className="secondary-btn"
                           onClick={handleGeneratePerspectives}
+                          aria-label="Retry perspective generation"
                         >
                           Retry Perspective Generation
                         </button>
@@ -764,6 +777,7 @@ export default function App() {
                                   type="button"
                                   className={`action-btn ${s.kept ? "btn-keep-active" : "btn-keep"}`}
                                   onClick={() => toggleKeep(s.id)}
+                                  aria-label={`${s.kept ? "Exclude" : "Keep"} ${s.name}`}
                                 >
                                   {s.kept ? "✓ Kept" : "Keep"}
                                 </button>
@@ -771,6 +785,7 @@ export default function App() {
                                   type="button"
                                   className="action-btn btn-edit"
                                   onClick={() => startEditing(s)}
+                                  aria-label={`Edit ${s.name}`}
                                 >
                                   Edit
                                 </button>
@@ -778,6 +793,7 @@ export default function App() {
                                   type="button"
                                   className="action-btn btn-remove"
                                   onClick={() => handleRemove(s.id)}
+                                  aria-label={`Remove ${s.name}`}
                                 >
                                   Remove
                                 </button>
@@ -835,13 +851,14 @@ export default function App() {
                           />
                         </div>
 
-                        {addError && <p className="add-error-text">{addError}</p>}
+                        {addError && <p className="add-error-text" role="alert">{addError}</p>}
 
                         <div className="button-row">
                           <button
                             type="submit"
                             className="secondary-btn"
                             disabled={!newStakeholder.name.trim() || !newStakeholder.reason.trim()}
+                            aria-label="Add new custom stakeholder"
                           >
                             + Add Stakeholder
                           </button>
@@ -856,6 +873,7 @@ export default function App() {
                         className="confirm-btn"
                         onClick={handleConfirm}
                         disabled={stakeholders.filter((s) => s.kept).length === 0}
+                        aria-label="Confirm stakeholder list"
                       >
                         Confirm Stakeholder List ({stakeholders.filter((s) => s.kept).length})
                       </button>
@@ -902,6 +920,7 @@ export default function App() {
                           id={`shift-tab-${s.id}`}
                           aria-selected={isActive}
                           aria-controls={`shift-panel-${s.id}`}
+                          aria-label={`Switch to ${s.name} perspective`}
                           tabIndex={0}
                           className={`shift-tab-btn ${isActive ? "shift-tab-active" : ""}`}
                           onClick={() => handleShiftPerspective(s.id)}
@@ -994,6 +1013,9 @@ export default function App() {
                             </div>
                           ) : (
                             <div className="audio-action-wrapper">
+                              <p className="audio-helper-text">
+                                Generate a short neutral narration of this perspective.
+                              </p>
                               <button
                                 type="button"
                                 className="hear-perspective-btn"
@@ -1156,10 +1178,10 @@ export default function App() {
                       </p>
 
                       {isComparisonStale && (
-                        <div className="stale-warning-banner">
+                        <div className="stale-warning-banner" role="alert">
                           <span className="stale-icon">⚠️</span>
                           <span className="stale-text">
-                            Stakeholders or perspectives were updated. This comparison may be outdated.
+                            These results were generated from an earlier version of your stakeholders. Regenerate to continue.
                           </span>
                         </div>
                       )}
@@ -1170,6 +1192,7 @@ export default function App() {
                           className="btn btn-compare"
                           onClick={handleCompare}
                           disabled={loadingComparison}
+                          aria-label="Compare confirmed perspectives"
                         >
                           {loadingComparison
                             ? "Comparing perspectives..."
@@ -1182,13 +1205,14 @@ export default function App() {
                       </div>
 
                       {comparisonError && (
-                        <div className="error-box comparison-error-box">
+                        <div className="error-box comparison-error-box" role="alert">
                           <span>{comparisonError}</span>
                           <button
                             type="button"
                             className="btn-retry"
                             onClick={handleCompare}
                             disabled={loadingComparison}
+                            aria-label="Retry comparison"
                           >
                             Retry Comparison
                           </button>
@@ -1196,6 +1220,14 @@ export default function App() {
                       )}
                     </div>
                   </div>
+
+                  {!comparison && !loadingComparison && (
+                    <div className="empty-state-card" role="region" aria-label="Comparison status">
+                      <p className="empty-state-text">
+                        Compare the confirmed perspectives to surface shared goals, differences, tensions, and dependencies.
+                      </p>
+                    </div>
+                  )}
 
                   {comparison && (
                     <div className="comparison-results">
@@ -1266,7 +1298,7 @@ export default function App() {
                         <div className="comparison-card-header">
                           <h3>Potential Tensions</h3>
                           <span className="comparison-card-desc">
-                            Situations where two or more priorities could pull the decision in different directions
+                            Situations where two or more priorities may create tension or pull the decision in different directions
                           </span>
                         </div>
                         {comparison.tensions && comparison.tensions.length > 0 ? (
@@ -1352,10 +1384,10 @@ export default function App() {
                         </p>
 
                         {explorationStale && (
-                          <div className="stale-warning-banner">
+                          <div className="stale-warning-banner" role="alert">
                             <span className="stale-icon">⚠️</span>
                             <span className="stale-text">
-                              This exploration is based on an earlier analysis. Regenerate approaches to reflect recent changes.
+                              These results were generated from an earlier version of your stakeholders or comparison. Regenerate to continue.
                             </span>
                           </div>
                         )}
@@ -1366,6 +1398,7 @@ export default function App() {
                             className="btn btn-explore"
                             onClick={handleExplore}
                             disabled={explorationLoading}
+                            aria-label="Explore alternative approaches"
                           >
                             {explorationLoading
                               ? "Exploring approaches..."
@@ -1378,13 +1411,14 @@ export default function App() {
                         </div>
 
                         {explorationError && (
-                          <div className="error-box exploration-error-box">
+                          <div className="error-box exploration-error-box" role="alert">
                             <span>{explorationError}</span>
                             <button
                               type="button"
                               className="btn-retry"
                               onClick={handleExplore}
                               disabled={explorationLoading}
+                              aria-label="Retry exploration"
                             >
                               Retry Exploration
                             </button>
@@ -1392,6 +1426,14 @@ export default function App() {
                         )}
                       </div>
                     </div>
+
+                    {!exploration && !explorationLoading && (
+                      <div className="empty-state-card" role="region" aria-label="Exploration status">
+                        <p className="empty-state-text">
+                          Explore possible approaches after comparing the perspectives.
+                        </p>
+                      </div>
+                    )}
 
                     {exploration && (
                       <div className="exploration-results">

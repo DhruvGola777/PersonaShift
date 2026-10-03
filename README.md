@@ -1,72 +1,129 @@
 # PersonaShift
 
-> General-purpose perspective-mapping and decision-exploration tool.
-
-## Milestone 6: Exploration + Tradeoffs (Alternative Approaches Engine)
-
-PersonaShift enables users to move from *"What perspectives and tensions exist?"* to *"What different approaches could address those tensions?"* without turning into a recommendation engine.
-
-In Milestone 6, the Exploration Engine consumes the full analytical pipeline (ProblemModel, confirmed stakeholders, perspectives, and comparison tensions/dependencies) to generate multiple plausible alternative approaches:
-- **Meaningfully Different Dimensions**: Approaches differ by scope, sequencing, implementation model, and discretion/safeguards rather than trivial wording variations.
-- **Strict Grounding in Existing Concerns**: Every addressed concern maps directly to an actual concern present in that stakeholder's existing perspective.
-- **Surfaced Trade-offs**: Highlights potential downsides, administrative frictions, or costs using cautious phrasing (*"may require"*, *"could increase"*, *"may create"*).
-- **Practical Implementation Considerations**: Identifies operational, technical, or timing factors required to explore each approach.
-- **Traceability & Invariant Validation**: Validates that all referenced stakeholders exist in the confirmed list; rejects unknown IDs, duplicate approach IDs, or ranking language.
-- **No Ranking, Scoring, or Recommendations**: Approaches are presented as alternatives for exploration; the user remains 100% responsible for deciding.
-- **Stale State Management**: Detects changes in stakeholders, perspectives, or comparison, warning the user and requiring re-exploration.
+> An interactive perspective-mapping and decision-exploration system that helps human decision-makers explore complex dilemmas through multi-stakeholder analysis, tension discovery, grounded alternative exploration, and multimodal narration.
 
 ---
 
-## Architecture & Technology Stack
+## What It Does
 
-- **Frontend**: React + JavaScript + Vite (minimal, functional UI)
-- **Backend**: Node.js + Express
-- **AI**: Google Gemini via `@google/genai` (structured JSON schema output)
-- **Validation**: Zod (runtime validation ensuring no unvalidated model output reaches the frontend)
-- **Error Handling**: Graceful retries on model generation or validation failure, clean HTTP errors without leaking sensitive internal details or keys.
+PersonaShift transforms ambiguous, high-stakes decisions into structured, multi-dimensional perspectives without automating away human judgment.
 
-### Project Structure
+Instead of outputting a single "recommendation" or picking a "winner," PersonaShift maps the human and operational landscape of a decision through a disciplined 7-stage analytical pipeline:
 
 ```
-personashift/
-├── client/
-│   ├── src/
-│   │   ├── App.jsx
-│   │   ├── main.jsx
-│   │   └── index.css
-│   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
-│
-├── server/
-│   ├── ai/
-│   │   ├── gemini.js           # Dedicated Gemini client & structured output config
-│   │   ├── prompts/
-│   │   │   ├── problemParser.js     # Problem Parser system prompt & rules
-│   │   │   ├── stakeholderEngine.js # Stakeholder Engine system prompt & rules
-│   │   │   └── perspectiveEngine.js # Perspective Engine system prompt & rules
-│   │   └── schemas/
-│   │       ├── problem.js           # Zod ProblemSchema & Gemini JSON schema
-│   │       ├── stakeholder.js       # Zod StakeholderSchema & Gemini JSON schema
-│   │       └── perspective.js       # Zod PerspectiveSchema & Gemini JSON schema
-│   │
-│   ├── services/
-│   │   ├── problemParser.js    # Problem Parser orchestration & retry
-│   │   ├── stakeholderEngine.js # Stakeholder Engine orchestration & retry
-│   │   └── perspectiveEngine.js # Perspective Engine invariant checks & retry
-│   │
-│   ├── routes/
-│   │   ├── analyze.js          # POST /api/analyze
-│   │   ├── stakeholders.js     # POST /api/stakeholders
-│   │   └── perspectives.js     # POST /api/perspectives
-│   │
-│   └── server.js               # Express application setup, CORS, and health check
-│
-├── .env.example
-├── .gitignore
-├── package.json
-└── README.md
+[ Problem Description ]
+          ↓
+[ Problem Parser ] ──▶ Distinguishes Facts, Unknowns, Assumptions, and Affected Areas
+          ↓
+[ Stakeholder Engine ] ──▶ Discovers Direct, Indirect, and System Stakeholders
+          ↓
+[ User Review ] ──▶ Human-in-the-loop authority: Keep, Edit, Add, Remove, and Confirm
+          ↓
+[ Perspective Engine ] ──▶ Generates Goals, Concerns, Constraints, Incentives, Priorities
+          ↓
+[ SHIFT Experience ] ──▶ Zero-latency interactive switching between stakeholder lenses
+          ↓
+[ Multimodal Audio ] ──▶ Optional deAPI-powered neutral audio narration ("Hear this perspective")
+          ↓
+[ Comparison Engine ] ──▶ Surfaces Shared Goals, Different Priorities, Tensions, & Dependencies
+          ↓
+[ Exploration Engine ] ──▶ Generates grounded alternative approaches with trade-offs & considerations
 ```
+
+### The Analytical Stages
+
+1. **Problem Parser**: Converts raw natural-language decision problems into a structured `ProblemModel` separating explicit facts from unknowns and assumptions.
+2. **Stakeholder Engine & User Review**: Identifies affected parties with clear rationale and relevance categories (`direct`, `indirect`, `system`). Users have complete authority to edit, add custom stakeholders, exclude suggestions, and finalize the list.
+3. **Perspective Engine**: Generates structured perspective models covering five core categories for each confirmed stakeholder:
+   - **Goals**: Potential outcomes that matter to this stakeholder.
+   - **Concerns**: Potential downsides, risks, or frictions.
+   - **Constraints**: Conditions or limitations binding this stakeholder.
+   - **Incentives**: Factors shaping behavior or positioning.
+   - **Priorities**: What is prioritized when evaluating the decision.
+4. **SHIFT Experience**: The signature interaction of PersonaShift. Users switch instantly between stakeholder viewpoints to understand how the same problem looks from different seats, preserving decision context at all times with zero network overhead.
+5. **Hear Perspective (deAPI Multimodal Audio)**: An optional multimodal layer that synthesizes a neutral, objective, third-person audio narration of an active perspective using deAPI's text-to-speech engine.
+6. **Comparison Engine**: Analyzes across perspectives to surface cross-cutting dynamics:
+   - **Shared Goals**: Overlapping outcomes valued by multiple stakeholders.
+   - **Different Priorities**: Areas where priorities pull in distinct directions.
+   - **Potential Tensions**: Situations where priorities may create friction or conflict.
+   - **Dependencies**: Situations where one stakeholder's outcome depends on another.
+7. **Exploration Engine**: Generates distinct alternative approaches to address identified tensions. Every addressed concern is strictly grounded in existing stakeholder perspective models. Approaches highlight trade-offs and implementation considerations without ranking or scoring.
+
+---
+
+## Why It Is Different
+
+1. **Not a Chatbot**: PersonaShift is an interactive perspective-mapping tool with structured models and dedicated analytical views, not an open-ended conversational chat assistant.
+2. **No "Winner" or Prescription**: The system never ranks stakeholders, picks sides, or prescribes what the user "should" do. The human user retains ultimate decision-making responsibility.
+3. **Transparent Epistemic Basis**: Every perspective element is explicitly labeled with its evidentiary status:
+   - `[FACT]`: Explicitly stated in the source problem.
+   - `[INFERENCE]`: Plausible contextual factor derived from domain knowledge.
+   - `[UNKNOWN]`: Recognized information gap that cannot be asserted as fact.
+4. **Anti-Hallucination & Concern Grounding**: Approaches generated during Exploration must strictly map to verified concerns already established in confirmed stakeholder perspectives; invented or cross-stakeholder concerns are rejected.
+5. **Zero-Latency Perspective Lenses**: Switching between stakeholders during the SHIFT experience is 100% client-side with zero additional API calls or token usage.
+
+---
+
+## Technology Stack
+
+- **Frontend**:
+  - React 18
+  - Vanilla CSS (custom design system, responsive breakpoints, high-contrast accessible tokens)
+  - Vite (build tool & local development server)
+- **Backend**:
+  - Node.js (ES Modules)
+  - Express (REST API)
+  - Zod (strict runtime schema validation)
+  - Node Native Fetch & Custom Secure Audio Proxy
+- **AI & Language Intelligence**:
+  - Google Gemini (`gemini-2.5-flash`) via the official `@google/genai` SDK
+  - Structured JSON outputs enforced by JSON Schema
+- **Multimodal Audio Layer**:
+  - deAPI Text-to-Speech API (`https://api.deapi.ai/api/v2/tts`)
+  - Server-side HTTPS audio streaming proxy (`/api/perspective-audio/proxy`) hardened against SSRF
+
+---
+
+## System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                       Client (React)                        │
+│  - SHIFT Perspective Selector  - Comparison & Tensions View │
+│  - Multimodal Audio Player     - Exploration & Trade-offs   │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ HTTP / JSON
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Express Backend Server                   │
+│  ├── POST /api/analyze                                      │
+│  ├── POST /api/stakeholders                                 │
+│  ├── POST /api/perspectives                                 │
+│  ├── POST /api/compare                                      │
+│  ├── POST /api/explore                                      │
+│  ├── POST /api/perspective-audio                            │
+│  └── GET  /api/perspective-audio/proxy (SSRF Protected)     │
+└──────────────┬───────────────────────────────┬──────────────┘
+               │                               │
+               ▼                               ▼
+┌──────────────────────────────┐ ┌────────────────────────────┐
+│         Google Gemini        │ │            deAPI           │
+│  - Structured Reasoning      │ │  - Multimodal Text-to-    │
+│  - Perspective Generation    │ │    Speech Narration        │
+│  - Comparative Synthesis     │ │  - Secure S3 Result Host   │
+└──────────────────────────────┘ └────────────────────────────┘
+```
+
+---
+
+## The Trust Model
+
+PersonaShift enforces a strict trust model across all prompts and UI views:
+
+- **No First-Person Roleplay**: The system never uses *"I am a student..."* or speaks in character. All perspective analyses and narrations use neutral third-person framing (*"Possible factors shaping the Students perspective"*).
+- **No Universal Generalizations**: Groups are never treated as homogeneous monoliths. Language reflects possibilities rather than sweeping assertions (*"May prioritize..."*, *"Could be concerned about..."*).
+- **Preserved Epistemic Distinctions**: Inferences are never converted into facts, and unknowns are made explicit rather than filled with hallucinated details.
+- **SSRF Protection on Proxy**: The `/api/perspective-audio/proxy` endpoint strictly validates targets: only `https://` URLs pointing exactly to `results.deapi.ai` on port 443 are allowed. Loopback, private IP ranges, metadata endpoints, and lookalike domains are rejected with HTTP 403.
 
 ---
 
@@ -75,245 +132,110 @@ personashift/
 ### 1. Prerequisites
 
 - [Node.js](https://nodejs.org/) (v18+ recommended)
-- A Google Gemini API key (obtainable from [Google AI Studio](https://aistudio.google.com/))
+- A **Google Gemini API Key** (from [Google AI Studio](https://aistudio.google.com/))
+- A **deAPI API Key** (from [deAPI Developer Console](https://deapi.ai/))
 
 ### 2. Installation
 
-Install all backend and frontend dependencies:
+Clone the repository and install all dependencies:
 
 ```bash
-npm install
-npm --prefix client install
+git clone https://github.com/DhruvGola777/PersonaShift.git
+cd PersonaShift
+npm run install:all
 ```
 
-### 3. Environment Configuration
+### 3. Environment Variables
 
-Copy `.env.example` to `.env` in the project root:
+Create a `.env` file in the root directory:
 
 ```bash
 cp .env.example .env
 ```
 
-Open `.env` and set your Gemini API key:
+Configure your API keys in `.env`:
 
 ```env
-GEMINI_API_KEY=your_actual_gemini_api_key_here
-PORT=3001
+# Google Gemini API Configuration
+GEMINI_API_KEY=your_gemini_api_key_here
 GEMINI_MODEL=gemini-2.5-flash
+
+# deAPI Multimodal Perspective Audio Configuration
+DEAPI_API_KEY=your_deapi_api_key_here
+DEAPI_TTS_MODEL=deapi-tts-1
+DEAPI_VOICE=aura-asteria-en
+
+# Server Configuration
+PORT=3001
 ```
 
-### 4. Running the Application
+### 4. Running Locally
 
-In one terminal, start the Express backend server:
+Start the backend server and client dev server:
 
 ```bash
+# Terminal 1: Start Express API server (with file watching)
 npm run dev:server
-```
 
-In a second terminal, start the Vite frontend dev server:
-
-```bash
+# Terminal 2: Start Vite client dev server
 npm run client
 ```
 
-Open your browser at `http://localhost:5173`.
+Open `http://localhost:5173` in your browser.
 
 ---
 
-## API Reference
+## Testing & Verification
 
-### Health Check
+PersonaShift includes automated test suites covering every milestone:
 
-```http
-GET /api/health
+```bash
+# Test 1: Problem Parser (structured extraction, facts/unknowns)
+npm run test:parser
+
+# Test 2: Stakeholder Engine (relevance taxonomy, discovery)
+npm run test:stakeholders
+
+# Test 3: Perspective Engine (5 categories, epistemic basis tracking)
+npm run test:perspectives
+
+# Test 4: SHIFT Experience (zero-latency switching, fallback, context preservation)
+npm run test:shift
+
+# Test 5: Comparison Engine (shared goals, priorities, tensions, dependencies)
+npm run test:comparison
+
+# Test 6: Exploration Engine (concern grounding, trade-offs, invariant validation)
+npm run test:exploration
+
+# Test 7: deAPI Perspective Audio & SSRF Security (neutral script, live TTS, proxy protection)
+npm run test:deapi
+
+# Build client bundle for production
+npm run client:build
 ```
-
-**Response (200 OK):**
-```json
-{
-  "ok": true,
-  "service": "personashift-api"
-}
-```
-
-### Analyze Problem
-
-```http
-POST /api/analyze
-Content-Type: application/json
-```
-
-**Request Payload:**
-```json
-{
-  "problem": "Our college is considering replacing physical textbooks with tablets."
-}
-```
-
-**Response (200 OK):**
-```json
-{
-  "problem": {
-    "summary": "The college is evaluating transitioning from traditional physical textbooks to digital tablets for students.",
-    "decision": "Whether to replace physical textbooks with tablets across the college.",
-    "domain": "Education",
-    "facts": [
-      "The institution is a college.",
-      "The college is considering replacing physical textbooks with tablets."
-    ],
-    "unknowns": [
-      "Who will bear the financial cost of purchasing the tablets?",
-      "Will tablets replace all textbooks or only select subjects?",
-      "What technical infrastructure and internet connectivity exist on campus?"
-    ],
-    "assumptions": [
-      "Students currently use traditional physical textbooks.",
-      "Digital textbooks are available for the curriculum."
-    ],
-    "affectedAreas": [
-      "Curriculum and pedagogy",
-      "Student learning experience and screen time",
-      "Institutional budget and procurement",
-      "Campus IT infrastructure and technical support"
-    ]
-  }
-}
-```
-
-### Discover Stakeholders
-
-```http
-POST /api/stakeholders
-Content-Type: application/json
-```
-
-**Request Payload:**
-```json
-{
-  "problem": {
-    "summary": "...",
-    "decision": "...",
-    "domain": "...",
-    "facts": [],
-    "unknowns": [],
-    "assumptions": [],
-    "affectedAreas": []
-  }
-}
-```
-
-**Response (200 OK):**
-```json
-{
-  "stakeholders": [
-    {
-      "id": "students",
-      "name": "Students",
-      "reason": "Directly affected by mandatory attendance requirements affecting scheduling and academic grading.",
-      "relevance": "direct",
-      "source": "ai"
-    }
-  ]
-}
-```
-
-### Generate Perspectives
-
-```http
-POST /api/perspectives
-Content-Type: application/json
-```
-
-**Request Payload:**
-```json
-{
-  "problem": {
-    "summary": "Our college is considering making attendance mandatory for all students.",
-    "decision": "Whether to make attendance mandatory for all students.",
-    "domain": "Education",
-    "facts": ["The institution is a college considering mandatory attendance."],
-    "unknowns": ["The exact enforcement mechanisms."],
-    "assumptions": ["Attendance tracking may require administrative effort."],
-    "affectedAreas": ["Academic performance", "Student scheduling"]
-  },
-  "stakeholders": [
-    {
-      "id": "students",
-      "name": "Students",
-      "reason": "Directly affected by mandatory attendance and consequences for absences.",
-      "relevance": "direct",
-      "source": "ai"
-    }
-  ]
-}
-```
-
-**Response (200 OK):**
-```json
-{
-  "perspectives": [
-    {
-      "stakeholderId": "students",
-      "goals": [
-        {
-          "text": "May aim to maintain flexibility in their personal and academic schedules.",
-          "basis": "inference"
-        }
-      ],
-      "concerns": [
-        {
-          "text": "May be concerned about potential penalties for missing classes due to personal circumstances.",
-          "basis": "inference"
-        }
-      ],
-      "constraints": [
-        {
-          "text": "May face transportation or work commitments that conflict with fixed class times.",
-          "basis": "unknown"
-        }
-      ],
-      "incentives": [
-        {
-          "text": "May have an incentive to attend classes to gain participation credit.",
-          "basis": "inference"
-        }
-      ],
-      "priorities": [
-        {
-          "text": "May prioritize balancing academic standing with outside obligations.",
-          "basis": "inference"
-        }
-      ]
-    }
-  ]
-}
-```
-
-### Error Handling
-
-The API returns appropriate HTTP status codes and user-friendly error messages:
-
-- `400 Bad Request`: If the problem input is missing, empty, or malformed.
-  ```json
-  {
-    "error": "Please provide a problem description."
-  }
-  ```
-- `500 Internal Server Error`: Clean error message returned when an upstream AI error or validation failure persists after a retry. API keys and stack traces are never exposed to the client.
 
 ---
 
-## Problem Parser Rules
+## Hackathon Development (LovHack Season 3)
 
-1. Create a concise, neutral summary of the situation.
-2. Identify the decision, change, or question being considered.
-3. Classify the problem into a broad domain.
-4. Put information explicitly stated by the user into `facts`.
-5. Put important information that is missing into `unknowns`.
-6. Put reasonable interpretations or implications into `assumptions`.
-7. Never present an assumption as a fact.
-8. Never invent statistics, names, motivations, or demographics.
-9. Identify broad areas that could potentially be affected.
-10. Keep the analysis general enough for subsequent stakeholder analysis.
-11. Do not recommend a decision or judge if it is good or bad.
-12. Do not claim that an entire group thinks or behaves in one particular way.
+PersonaShift was designed and developed during **LovHack Season 3** as an exploratory perspective-mapping tool.
+
+All milestones were created sequentially and validated with automated regression tests:
+- **Milestone 1**: Project Foundation + Problem Parser
+- **Milestone 2**: Stakeholder Engine + User Review
+- **Milestone 3**: Perspective Engine + Uncertainty Tracking
+- **Milestone 4**: SHIFT Experience + Zero-Latency Perspective Switching
+- **Milestone 5**: Comparison Engine + Tensions & Dependencies
+- **Milestone 6**: Exploration Engine + Grounded Alternative Approaches
+- **Milestone 7**: deAPI Multimodal Perspective Audio Narration
+- **Milestone 8**: Final Polish, Accessibility, SSRF Hardening, and Submission Readiness
+
+### Sponsor Integration (deAPI)
+PersonaShift meaningfully utilizes **deAPI** for its multimodal layer. Rather than using deAPI as a reasoning model (which is handled by Google Gemini), PersonaShift leverages deAPI's text-to-speech API to produce objective audio narrations of structured perspective factors, allowing users to audibly absorb perspectives while preserving neutral third-person framing.
+
+---
+
+## License
+
+MIT

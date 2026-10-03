@@ -1615,4 +1615,140 @@ button:disabled {
   font-weight: bold;
 }
 
+/* ==========================================================================
+   Milestone 8: Polish, Accessibility, Empty States & Responsive Design
+   ========================================================================== */
+
+/* Intentional Empty States */
+.empty-state-card {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 24px 20px;
+  text-align: center;
+  margin-top: 14px;
+}
+
+.empty-state-text {
+  font-size: 14px;
+  color: #64748b;
+  font-style: italic;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Audio Helper Text */
+.audio-action-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.audio-helper-text {
+  font-size: 12.5px;
+  color: #6b7280;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Accessible Focus States */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.shift-tab-btn:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.hear-perspective-btn:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 2px;
+}
+
+.btn-compare:focus-visible {
+  outline: 2px solid #0284c7;
+  outline-offset: 2px;
+}
+
+.btn-explore:focus-visible {
+  outline: 2px solid #059669;
+  outline-offset: 2px;
+}
+
+/* Responsive Polish across Desktop, Tablet & Mobile */
+@media (max-width: 768px) {
+  body {
+    padding: 16px 12px;
+  }
+
+  .meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lists-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .add-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stakeholder-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .perspective-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .perspective-item {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .basis-badge {
+    align-self: flex-start;
+  }
+
+  .card-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .shift-tabs {
+    gap: 6px;
+  }
+
+  .shift-tab-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .comparison-header-row,
+  .exploration-header-row {
+    flex-wrap: wrap;
+  }
+
+  .approach-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .audio-player-wrapper {
+    padding: 10px 12px;
+  }
+}
+
 
