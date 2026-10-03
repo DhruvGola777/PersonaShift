@@ -90,10 +90,32 @@ router.post("/perspective-audio", async (req, res) => {
   }
 });
 
+export const TRUSTED_AUDIO_HOST = "results.deapi.ai";
+
+/**
+ * Validates whether a target audio URL strictly belongs to trusted deAPI results storage.
+ * Prevents SSRF attacks against localhost, internal networks, or arbitrary external domains.
+ *
+ * @param {string} urlString
+ * @returns {boolean}
+ */
+export function isTrustedAudioResultUrl(urlString) {
+  if (!urlString || typeof urlString !== "string") return false;
+  try {
+    const parsed = new URL(urlString);
+    if (parsed.protocol !== "https:") return false;
+    if (parsed.hostname.toLowerCase() !== TRUSTED_AUDIO_HOST) return false;
+    if (parsed.port && parsed.port !== "443") return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * GET /api/perspective-audio/proxy
  *
- * Securely proxies audio streams from results.deapi.ai to the client
+ * Securely proxies audio streams strictly from results.deapi.ai to the client
  * to eliminate browser CORS restrictions and header mismatch issues.
  */
 router.get("/perspective-audio/proxy", async (req, res) => {
@@ -103,13 +125,15 @@ router.get("/perspective-audio/proxy", async (req, res) => {
     return res.status(400).json({ error: "Missing audio url parameter." });
   }
 
-  try {
-    const parsed = new URL(targetUrl);
-    // Allow only deAPI result domain for proxying security
-    if (!parsed.hostname.endsWith("deapi.ai")) {
-      return res.status(403).json({ error: "Invalid proxy target domain." });
-    }
+  // Strict SSRF protection: only allow HTTPS requests to results.deapi.ai
+  if (!isTrustedAudioResultUrl(targetUrl)) {
+    return res.status(403).json({
+      error: `Access denied. Target URL host must strictly be "${TRUSTED_AUDIO_HOST}" with HTTPS.`,
+      code: "UNTRUSTED_PROXY_TARGET"
+    });
+  }
 
+  try {
     const audioRes = await fetch(targetUrl);
     if (!audioRes.ok) {
       return res.status(audioRes.status).json({ error: "Failed to fetch audio stream from upstream." });

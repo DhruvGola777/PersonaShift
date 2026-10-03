@@ -9,6 +9,10 @@ import {
   buildPerspectiveNarrationText,
   generatePerspectiveAudio
 } from "../server/services/deapiService.js";
+import {
+  isTrustedAudioResultUrl,
+  TRUSTED_AUDIO_HOST
+} from "../server/routes/perspectiveAudio.js";
 
 /**
  * PersonaShift — Milestone 7: deAPI Multimodal Perspective Audio Test Suite
@@ -316,6 +320,48 @@ if (isDeapiConfigured()) {
 } else {
   console.log("ℹ DEAPI_API_KEY is not set. Skipping live external call (unit & invariant tests passed).");
 }
+
+// ----------------------------------------------------
+// Test 10: Strict proxy URL validation & SSRF prevention
+// ----------------------------------------------------
+console.log("--------------------------------------------------");
+console.log("Test 10: Proxy URL validation & SSRF prevention");
+console.log("--------------------------------------------------");
+
+// 1. Valid deAPI audio result URLs must PASS
+const validResultUrl = "https://results.deapi.ai/22080983/lc0GMyWOWWVpPdrq4SjWivqsJSuE46XarsnAp2ri.mp3?X-Amz-Signature=abc";
+assert.strictEqual(
+  isTrustedAudioResultUrl(validResultUrl),
+  true,
+  "Valid results.deapi.ai HTTPS URL must be accepted."
+);
+console.log(`✓ Trusted deAPI audio URL successfully accepted: ${validResultUrl.slice(0, 40)}...`);
+
+// 2. Untrusted / arbitrary targets must be strictly REJECTED
+const forbiddenUrls = [
+  { url: "http://results.deapi.ai/audio.mp3", reason: "Insecure HTTP protocol" },
+  { url: "https://evil-deapi.ai/audio.mp3", reason: "Domain suffix spoofing (evil-deapi.ai)" },
+  { url: "https://deapi.ai.attacker.com/audio.mp3", reason: "Attacker subdomain spoofing" },
+  { url: "https://api.deapi.ai/api/v2/account/balance", reason: "Internal/management deAPI API endpoint" },
+  { url: "http://localhost:3001/api/health", reason: "Localhost loopback" },
+  { url: "http://127.0.0.1:3001/api/health", reason: "127.0.0.1 loopback IP" },
+  { url: "http://169.254.169.254/latest/meta-data/", reason: "Cloud metadata link-local IP" },
+  { url: "https://google.com/test.mp3", reason: "Arbitrary external domain" },
+  { url: "ftp://results.deapi.ai/audio.mp3", reason: "Non-HTTPS scheme" },
+  { url: "javascript:alert(1)", reason: "JavaScript URI" },
+  { url: "not-a-url", reason: "Malformed string" },
+  { url: "", reason: "Empty string" },
+  { url: null, reason: "Null input" }
+];
+
+for (const { url, reason } of forbiddenUrls) {
+  assert.strictEqual(
+    isTrustedAudioResultUrl(url),
+    false,
+    `Target URL should be rejected: ${url} (${reason})`
+  );
+}
+console.log(`✓ Confirmed all ${forbiddenUrls.length} untrusted, internal, and spoofed target URLs are rejected.`);
 
 console.log("\n==================================================");
 console.log("All Milestone 7 deAPI Perspective Audio Tests Passed! ✓");
