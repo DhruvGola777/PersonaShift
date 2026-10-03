@@ -1,3 +1,4 @@
+import "dotenv/config";
 import assert from "assert";
 import { z } from "zod";
 import { ProblemSchema } from "../server/ai/schemas/problem.js";
