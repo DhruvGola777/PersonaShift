@@ -323,7 +323,13 @@ export default function App() {
         })
       });
 
-      const data = await response.json();
+      const responseText = await response.text();
+      let data = {};
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch (parseErr) {
+        data = { error: responseText || `Server responded with HTTP ${response.status}` };
+      }
 
       if (!response.ok) {
         throw new Error(data.error || "Failed to generate audio narration.");
