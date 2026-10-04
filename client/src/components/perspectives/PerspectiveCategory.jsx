@@ -10,13 +10,13 @@ export default function PerspectiveCategory({ title, description, items }) {
       <ul className="items-list">
         {items.map((item, idx) => (
           <li key={idx} className="perspective-item">
-            <span className="item-text">{item.text}</span>
             <span
               className={`basis-badge basis-${item.basis}`}
               title={`Basis: ${item.basis}`}
             >
               [{item.basis}]
             </span>
+            <span className="item-text">{item.text}</span>
           </li>
         ))}
       </ul>

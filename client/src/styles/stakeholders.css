@@ -1,21 +1,22 @@
 /* Stakeholder Engine Styles */
 .stakeholders-wrapper {
-  margin-top: 12px;
-  border-top: 2px solid #e5e7eb;
-  padding-top: 24px;
+  margin-top: 32px;
+  border-top: 1px solid var(--border-hairline);
+  padding-top: 28px;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 
 .review-intro {
-  font-size: 14px;
-  color: #4b5563;
-  margin-bottom: 16px;
+  font-size: 13.5px;
+  color: var(--color-text-secondary);
+  margin-bottom: 18px;
+  line-height: 1.5;
 }
 
 .stakeholder-list {
@@ -26,25 +27,26 @@
 }
 
 .stakeholder-card {
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 16px;
-  transition: all 0.15s ease;
+  background: var(--color-surface);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-subtle);
+  transition: all var(--transition-fast);
 }
 
 .card-kept {
-  border-left: 4px solid #2563eb;
+  border-left: 3px solid var(--color-text-primary);
 }
 
 .card-excluded {
   opacity: 0.55;
-  border-left: 4px solid #9ca3af;
-  background: #fafafa;
+  border-left: 3px solid var(--border-subtle);
+  background: var(--color-surface-subtle);
 }
 
 .confirmed-card {
-  border-left: 4px solid #16a34a;
+  border-left: 3px solid #059669;
 }
 
 .stakeholder-header {
@@ -55,16 +57,17 @@
 }
 
 .stakeholder-name {
-  font-size: 16px;
+  font-size: 15.5px;
   font-weight: 600;
-  color: #111827;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
 }
 
 .stakeholder-reason {
-  font-size: 14px;
-  color: #374151;
-  line-height: 1.5;
-  margin-bottom: 12px;
+  font-size: 13.5px;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  margin-bottom: 14px;
 }
 
 .card-actions {
@@ -74,55 +77,59 @@
 }
 
 .action-btn {
-  padding: 6px 12px;
-  font-size: 13px;
-  border-radius: 5px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
 }
 
 .btn-keep {
-  background-color: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--border-subtle);
 }
 
 .btn-keep:hover {
-  background-color: #e5e7eb;
+  background-color: var(--color-surface-subtle);
+  color: var(--color-text-primary);
 }
 
 .btn-keep-active {
-  background-color: #2563eb;
-  color: #ffffff;
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border-color: var(--btn-primary-border);
 }
 
 .btn-keep-active:hover {
-  background-color: #1d4ed8;
+  background-color: var(--btn-primary-hover);
 }
 
 .btn-edit {
-  background-color: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--border-subtle);
 }
 
 .btn-edit:hover {
-  background-color: #e5e7eb;
+  background-color: var(--color-surface-subtle);
+  color: var(--color-text-primary);
 }
 
 .btn-remove {
-  background-color: #fee2e2;
+  background-color: #fef2f2;
   color: #991b1b;
-  border: 1px solid #fca5a5;
+  border: 1px solid #fecaca;
 }
 
 .btn-remove:hover {
-  background-color: #fecaca;
+  background-color: #fee2e2;
 }
 
 /* Edit Form */
 .edit-form {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .form-group {
@@ -132,9 +139,10 @@
 }
 
 .form-group label {
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 600;
-  color: #4b5563;
+  color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -147,31 +155,34 @@
 }
 
 .save-btn {
-  background-color: #16a34a;
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: 1px solid var(--btn-primary-border);
 }
 
 .save-btn:hover:not(:disabled) {
-  background-color: #15803d;
+  background-color: var(--btn-primary-hover);
 }
 
 .cancel-btn {
-  background-color: #f3f4f6;
-  color: #374151;
-  border: 1px solid #d1d5db;
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--border-subtle);
 }
 
 /* Add Stakeholder Box */
 .add-stakeholder-box {
-  background: #f9fafb;
-  border: 1px dashed #cbd5e1;
-  border-radius: 8px;
-  padding: 16px 20px;
+  background: var(--color-surface-subtle);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
   margin-bottom: 24px;
 }
 
 .add-stakeholder-box h3 {
-  font-size: 15px;
-  color: #1e293b;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
   margin-bottom: 12px;
 }
 
@@ -184,35 +195,41 @@
 
 .add-error-text {
   color: #b91c1c;
-  font-size: 13px;
+  font-size: 12.5px;
   margin-top: 6px;
 }
 
-/* Confirm Row */
+/* Confirm Row (Unified Action) */
 .confirm-row {
   display: flex;
   justify-content: center;
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 .confirm-btn {
-  background-color: #059669;
-  font-size: 15px;
-  padding: 11px 24px;
-  border-radius: 7px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  border: 1px solid var(--btn-primary-border);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-subtle);
 }
 
 .confirm-btn:hover:not(:disabled) {
-  background-color: #047857;
+  background-color: var(--btn-primary-hover);
+  border-color: var(--btn-primary-hover);
 }
 
 /* Confirmed View */
 .confirmed-section {
-  background: #f0fdf4;
-  border: 1px solid #86efac;
-  border-radius: 8px;
-  padding: 20px;
+  background: var(--color-surface);
+  border: 1px solid #a7f3d0;
+  border-left: 3px solid #059669;
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  box-shadow: var(--shadow-subtle);
 }
 
 .confirmed-header {
@@ -223,14 +240,15 @@
 }
 
 .confirmed-header h3 {
-  font-size: 18px;
-  color: #166534;
+  font-size: 16px;
+  font-weight: 600;
+  color: #065f46;
 }
 
 .generate-perspectives-box {
   margin-top: 20px;
   padding-top: 18px;
-  border-top: 1px dashed #86efac;
+  border-top: 1px dashed var(--border-hairline);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -239,6 +257,6 @@
 }
 
 .generate-text {
-  font-size: 14px;
-  color: #166534;
+  font-size: 13.5px;
+  color: var(--color-text-secondary);
 }

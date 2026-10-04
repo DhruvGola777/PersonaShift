@@ -4,75 +4,76 @@
 
 /* Intentional Empty States */
 .empty-state-card {
-  background: #f8fafc;
-  border: 1px dashed #cbd5e1;
-  border-radius: 8px;
+  background: var(--color-surface);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-md);
   padding: 24px 20px;
   text-align: center;
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
 .empty-state-text {
-  font-size: 14px;
-  color: #64748b;
+  font-size: 13.5px;
+  color: var(--color-text-secondary);
   font-style: italic;
   max-width: 600px;
   margin: 0 auto;
   line-height: 1.5;
 }
 
-/* Audio Helper Text */
-.audio-action-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-start;
-}
-
-.audio-helper-text {
-  font-size: 12.5px;
-  color: #6b7280;
-  font-style: italic;
-  margin: 0;
-}
-
-/* Accessible Focus States */
+/* Accessible High-Contrast Focus States (WCAG AA Compliant) */
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid #2563eb;
-  outline-offset: 2px;
+  outline: 2px solid var(--btn-primary-bg) !important;
+  outline-offset: 2px !important;
 }
 
 .shift-tab-btn:focus-visible {
-  outline: 2px solid #4f46e5;
-  outline-offset: 2px;
+  outline: 2px solid var(--btn-primary-bg) !important;
+  outline-offset: 2px !important;
 }
 
 .hear-perspective-btn:focus-visible {
-  outline: 2px solid #7c3aed;
-  outline-offset: 2px;
+  outline: 2px solid var(--btn-primary-bg) !important;
+  outline-offset: 2px !important;
 }
 
 .btn-compare:focus-visible {
-  outline: 2px solid #0284c7;
-  outline-offset: 2px;
+  outline: 2px solid var(--btn-primary-bg) !important;
+  outline-offset: 2px !important;
 }
 
 .btn-explore:focus-visible {
-  outline: 2px solid #059669;
-  outline-offset: 2px;
+  outline: 2px solid var(--btn-primary-bg) !important;
+  outline-offset: 2px !important;
 }
 
-/* Responsive Polish across Desktop, Tablet & Mobile */
+/* Responsive Polish across Tablet & Mobile */
+@media (max-width: 900px) {
+  .priority-columns {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .priority-vs-divider {
+    padding: 4px 0;
+  }
+}
+
 @media (max-width: 768px) {
   body {
-    padding: 16px 12px;
+    padding: 20px 14px;
+  }
+
+  .header h1 {
+    font-size: 22px;
   }
 
   .meta-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 
   .lists-grid {
@@ -89,6 +90,10 @@ select:focus-visible {
     gap: 6px;
   }
 
+  .perspective-card {
+    padding: 18px 16px;
+  }
+
   .perspective-card-header {
     flex-direction: column;
     align-items: flex-start;
@@ -97,6 +102,7 @@ select:focus-visible {
 
   .perspective-item {
     flex-direction: column;
+    align-items: flex-start;
     gap: 6px;
   }
 
@@ -109,12 +115,24 @@ select:focus-visible {
     justify-content: flex-start;
   }
 
+  /* Horizontal Scrolling Rail for SHIFT Tabs on Mobile */
   .shift-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     gap: 6px;
   }
 
+  .shift-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
   .shift-tab-btn {
-    padding: 8px 12px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 7px 13px;
     font-size: 13px;
   }
 
@@ -123,15 +141,47 @@ select:focus-visible {
     flex-wrap: wrap;
   }
 
+  .approach-card {
+    padding: 18px 16px;
+  }
+
   .approach-card-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
   }
 
+  .addressed-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
   .audio-player-wrapper {
-    padding: 10px 12px;
+    padding: 12px 14px;
   }
 }
 
+@media (max-width: 480px) {
+  body {
+    padding: 16px 10px;
+  }
 
+  .result-card,
+  .input-section,
+  .shift-container,
+  .comparison-trigger-box,
+  .comparison-card,
+  .exploration-trigger-box,
+  .approach-card {
+    padding: 16px 14px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .perspective-title {
+    font-size: 18px;
+  }
+}

@@ -1,10 +1,14 @@
 import React from "react";
 
+const ROMAN_NUMERALS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+
 export default function ApproachCard({ approach, index, getStakeholderName }) {
+  const proposalLabel = `PROPOSAL ${ROMAN_NUMERALS[index] || (index + 1)}`;
+
   return (
     <div className="approach-card">
       <div className="approach-card-header">
-        <span className="approach-tag">Approach {index + 1}</span>
+        <span className="approach-tag">{proposalLabel}</span>
         <h3 className="approach-title">{approach.title}</h3>
       </div>
       <p className="approach-description">{approach.description}</p>

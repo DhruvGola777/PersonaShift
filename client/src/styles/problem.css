@@ -1,119 +1,150 @@
 .summary-text {
-  font-size: 16px;
-  color: #1f2937;
-  margin-bottom: 16px;
+  font-size: 15.5px;
+  color: var(--color-text-primary);
+  margin-bottom: 18px;
   line-height: 1.6;
 }
 
 .meta-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  border-top: 1px solid #f3f4f6;
-  padding-top: 16px;
+  gap: 20px;
+  border-top: 1px solid var(--border-hairline);
+  padding-top: 18px;
 }
 
 .meta-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .meta-label {
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #6b7280;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
   font-weight: 600;
 }
 
 .meta-value {
-  font-size: 15px;
-  color: #111827;
+  font-size: 14.5px;
+  color: var(--color-text-primary);
   font-weight: 500;
+  line-height: 1.45;
 }
 
+/* Compact Monospace Badges (Anti-Pill) */
 .badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 9999px;
-  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2.5px 7px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 600;
-  text-transform: capitalize;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
 }
 
 .domain-badge {
-  background-color: #e0f2fe;
-  color: #0369a1;
+  background-color: var(--color-surface-subtle);
+  color: var(--color-text-primary);
+  border: 1px solid var(--border-subtle);
   align-self: flex-start;
 }
 
 .badge-group {
   display: flex;
+  align-items: center;
   gap: 6px;
 }
 
 .relevance-direct {
-  background-color: #dbeafe;
-  color: #1e40af;
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
 }
 
 .relevance-indirect {
-  background-color: #f3e8ff;
-  color: #6b21a8;
+  background-color: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
 }
 
 .relevance-system {
-  background-color: #fef3c7;
-  color: #92400e;
+  background-color: #f8fafc;
+  color: #334155;
+  border: 1px solid #cbd5e1;
 }
 
 .source-ai {
-  background-color: #f3f4f6;
-  color: #4b5563;
+  background-color: #f8fafc;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
 }
 
 .source-user {
-  background-color: #dcfce7;
-  color: #166534;
+  background-color: var(--fact-bg);
+  color: var(--fact-color);
+  border: 1px solid var(--fact-border);
 }
 
 .lists-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 16px;
 }
 
 .list-card {
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 18px;
+  background: var(--color-surface);
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-subtle);
 }
 
 .list-card h3 {
-  font-size: 15px;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 6px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-primary);
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-hairline);
+  padding-bottom: 8px;
 }
 
 .list-card ul {
-  padding-left: 20px;
+  list-style: none;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .list-card li {
+  font-size: 13.5px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  position: relative;
+  padding-left: 14px;
+}
+
+.list-card li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--color-text-muted);
   font-size: 14px;
-  color: #374151;
+  line-height: 1.4;
 }
 
 .empty-text {
-  font-size: 14px;
+  font-size: 13.5px;
   font-style: italic;
-  color: #9ca3af;
+  color: var(--color-text-muted);
 }
