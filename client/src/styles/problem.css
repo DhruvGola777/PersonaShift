@@ -1,0 +1,119 @@
+.summary-text {
+  font-size: 16px;
+  color: #1f2937;
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 16px;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.meta-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.meta-value {
+  font-size: 15px;
+  color: #111827;
+  font-weight: 500;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.domain-badge {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  align-self: flex-start;
+}
+
+.badge-group {
+  display: flex;
+  gap: 6px;
+}
+
+.relevance-direct {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.relevance-indirect {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+}
+
+.relevance-system {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.source-ai {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.source-user {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.lists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 16px;
+}
+
+.list-card {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.list-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 6px;
+}
+
+.list-card ul {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.list-card li {
+  font-size: 14px;
+  color: #374151;
+}
+
+.empty-text {
+  font-size: 14px;
+  font-style: italic;
+  color: #9ca3af;
+}

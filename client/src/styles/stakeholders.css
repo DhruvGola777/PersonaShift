@@ -1,0 +1,244 @@
+/* Stakeholder Engine Styles */
+.stakeholders-wrapper {
+  margin-top: 12px;
+  border-top: 2px solid #e5e7eb;
+  padding-top: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.review-intro {
+  font-size: 14px;
+  color: #4b5563;
+  margin-bottom: 16px;
+}
+
+.stakeholder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stakeholder-card {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 16px;
+  transition: all 0.15s ease;
+}
+
+.card-kept {
+  border-left: 4px solid #2563eb;
+}
+
+.card-excluded {
+  opacity: 0.55;
+  border-left: 4px solid #9ca3af;
+  background: #fafafa;
+}
+
+.confirmed-card {
+  border-left: 4px solid #16a34a;
+}
+
+.stakeholder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.stakeholder-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.stakeholder-reason {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 5px;
+}
+
+.btn-keep {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-keep:hover {
+  background-color: #e5e7eb;
+}
+
+.btn-keep-active {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.btn-keep-active:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-edit {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-edit:hover {
+  background-color: #e5e7eb;
+}
+
+.btn-remove {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.btn-remove:hover {
+  background-color: #fecaca;
+}
+
+/* Edit Form */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.action-row {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.save-btn {
+  background-color: #16a34a;
+}
+
+.save-btn:hover:not(:disabled) {
+  background-color: #15803d;
+}
+
+.cancel-btn {
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+/* Add Stakeholder Box */
+.add-stakeholder-box {
+  background: #f9fafb;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.add-stakeholder-box h3 {
+  font-size: 15px;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+.add-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.add-error-text {
+  color: #b91c1c;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* Confirm Row */
+.confirm-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.confirm-btn {
+  background-color: #059669;
+  font-size: 15px;
+  padding: 11px 24px;
+  border-radius: 7px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-btn:hover:not(:disabled) {
+  background-color: #047857;
+}
+
+/* Confirmed View */
+.confirmed-section {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.confirmed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.confirmed-header h3 {
+  font-size: 18px;
+  color: #166534;
+}
+
+.generate-perspectives-box {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px dashed #86efac;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.generate-text {
+  font-size: 14px;
+  color: #166534;
+}

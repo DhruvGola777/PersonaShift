@@ -1,0 +1,308 @@
+/* Milestone 3 & 4: Perspective Engine & SHIFT Experience Styles */
+.perspectives-section {
+  margin-top: 24px;
+  border-top: 2px solid #e5e7eb;
+  padding-top: 24px;
+}
+
+/* Context Preservation: Decision Banner */
+.shift-decision-banner {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-left: 5px solid #4f46e5;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.shift-decision-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.shift-decision-tag {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #4f46e5;
+}
+
+.shift-decision-text {
+  font-size: 17px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* SHIFT Selector Container */
+.shift-container {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.shift-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.shift-tag {
+  background-color: #4f46e5;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+}
+
+.shift-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+.shift-microcopy {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.shift-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.shift-tab-btn {
+  background-color: #f8fafc;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  padding: 9px 16px;
+  border-radius: 7px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.shift-tab-btn:hover {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+}
+
+.shift-tab-btn:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.tab-indicator {
+  font-size: 11px;
+  margin-right: 6px;
+}
+
+.shift-tab-active {
+  background-color: #4f46e5 !important;
+  color: #ffffff !important;
+  border-color: #4338ca !important;
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
+  font-weight: 600;
+}
+
+/* Perspective Detail Card */
+.perspective-card {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 22px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.perspective-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.perspective-eyebrow {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #64748b;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.perspective-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.perspective-inclusion-context {
+  background: #f8fafc;
+  border-left: 3px solid #94a3b8;
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+  margin-bottom: 12px;
+}
+
+.inclusion-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 3px;
+}
+
+.inclusion-reason {
+  font-size: 13.5px;
+  color: #334155;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.perspective-framing-banner {
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin-bottom: 14px;
+  border: 1px dashed #cbd5e1;
+}
+
+.framing-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  font-style: italic;
+  margin: 0;
+}
+
+/* 5 Categories Grid */
+.categories-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.category-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+
+.category-header {
+  margin-bottom: 10px;
+}
+
+.category-header h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.category-desc {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.items-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.perspective-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+  padding: 10px 12px;
+}
+
+.item-text {
+  font-size: 14px;
+  color: #1f2937;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* Basis Badges */
+.basis-badge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+
+.basis-fact {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.basis-inference {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border-color: #bfdbfe;
+}
+
+.basis-unknown {
+  background-color: #fefce8;
+  color: #854d0e;
+  border-color: #fde047;
+}
+
+/* Basis Legend */
+.basis-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 12px;
+}
+
+.legend-title {
+  font-weight: 600;
+  color: #4b5563;
+  margin-right: 4px;
+}
+
+.legend-desc {
+  color: #6b7280;
+  margin-right: 12px;
+}
