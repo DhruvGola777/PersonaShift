@@ -467,6 +467,7 @@ export default function App() {
           analyzing={analyzing}
           problemError={problemError}
           onSubmit={handleAnalyze}
+          hasResult={!!problemResult}
         />
 
         {/* Step 2: Problem Result */}

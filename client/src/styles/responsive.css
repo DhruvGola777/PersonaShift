@@ -51,6 +51,22 @@ select:focus-visible {
 }
 
 /* Responsive Polish across Tablet & Mobile */
+@media (max-width: 960px) {
+  .workflow-pipeline {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .workflow-divider {
+    display: none;
+  }
+
+  .preset-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
 @media (max-width: 900px) {
   .priority-columns {
     grid-template-columns: 1fr;
@@ -67,8 +83,62 @@ select:focus-visible {
     padding: 20px 14px;
   }
 
+  .brand-title {
+    font-size: 24px;
+  }
+
   .header h1 {
-    font-size: 22px;
+    font-size: 24px;
+  }
+
+  .workflow-pipeline {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 8px 10px;
+  }
+
+  .workflow-step {
+    padding: 4px;
+  }
+
+  .input-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .workspace-badge {
+    align-self: flex-start;
+  }
+
+  .input-footer-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .input-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .btn-analyze {
+    flex: 1;
+  }
+
+  .example-chips-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .example-chips-group {
+    width: 100%;
+  }
+
+  .example-chip {
+    flex: 1 1 auto;
+    text-align: center;
   }
 
   .meta-grid {
