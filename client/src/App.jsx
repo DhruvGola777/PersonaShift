@@ -7,6 +7,21 @@ import ShiftExperience from "./components/perspectives/ShiftExperience.jsx";
 import ComparisonSection from "./components/comparison/ComparisonSection.jsx";
 import ExplorationSection from "./components/exploration/ExplorationSection.jsx";
 
+// Safely parse JSON responses from API endpoints
+async function parseJsonResponse(response, defaultErrorMsg) {
+  const text = await response.text();
+  let data = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    throw new Error(defaultErrorMsg || "Failed to parse server response. Please try again.");
+  }
+  if (!response.ok) {
+    throw new Error(data?.error || defaultErrorMsg || `Server error (${response.status})`);
+  }
+  return data;
+}
+
 export default function App() {
   // Problem Parser state
   const [problemInput, setProblemInput] = useState("");
@@ -85,11 +100,7 @@ export default function App() {
         body: JSON.stringify({ problem: trimmed })
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to analyze problem.");
-      }
+      const data = await parseJsonResponse(response, "Failed to analyze problem.");
 
       setProblemResult(data.problem);
 
@@ -114,11 +125,7 @@ export default function App() {
         body: JSON.stringify({ problem })
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to discover stakeholders.");
-      }
+      const data = await parseJsonResponse(response, "Failed to discover stakeholders.");
 
       // Add a 'kept' property to track user selection (defaults to true)
       const mapped = (data.stakeholders || []).map((s) => ({
@@ -281,11 +288,7 @@ export default function App() {
         })
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to generate perspectives.");
-      }
+      const data = await parseJsonResponse(response, "Failed to generate perspectives.");
 
       setPerspectives(data.perspectives);
       // Automatically select the first confirmed stakeholder
@@ -376,11 +379,7 @@ export default function App() {
         })
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to generate comparison.");
-      }
+      const data = await parseJsonResponse(response, "Failed to generate comparison.");
 
       setComparison(data.comparison);
       setIsComparisonStale(false);
@@ -417,11 +416,7 @@ export default function App() {
         })
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to generate exploration approaches.");
-      }
+      const data = await parseJsonResponse(response, "Failed to generate exploration approaches.");
 
       setExploration(data.exploration);
       setExplorationStale(false);
